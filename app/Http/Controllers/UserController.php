@@ -9,53 +9,39 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function getLandingData()
+    // Halaman utama user (landing + dashboard ringkas)
+    public function index()
     {
-        try {
-            $services = Service::all();
-            $user = Auth::user();
-            
-            $userData = null;
-            $latestOrder = null;
+        // Ambil semua layanan
+        $services = Service::all();
+        
+        $user = Auth::user();
+        $latestOrder = null;
+        $totalOrder = 0;
+        $totalExpense = 0;
+        $points = 0;
 
-            if ($user) {
-                $orders = Order::where('user_id', $user->id)->get();
-                
-                $userData = [
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'phone' => $user->phone,
-                    'total_order' => $orders->count(),
-                    'total_expense' => $orders->sum('total_price'),
-                    'points' => floor($orders->sum('total_price') / 10000),
-                ];
+        if ($user) {
+            // Statistik pesanan user
+            $orders = Order::where('user_id', $user->id)->get();
+            $totalOrder = $orders->count();
+            $totalExpense = $orders->sum('total_price');
+            $points = $user->points ?? 0;
 
-                $latestOrderObj = Order::where('user_id', $user->id)
-                    ->with('service')
-                    ->latest()
-                    ->first();
-
-                if ($latestOrderObj) {
-                    $latestOrder = [
-                        'id' => $latestOrderObj->order_code,
-                        'service' => $latestOrderObj->service->name,
-                        'weight' => $latestOrderObj->weight,
-                        'total' => $latestOrderObj->total_price,
-                        'status' => $latestOrderObj->status,
-                    ];
-                }
-            }
-
-            return response()->json([
-                'services' => $services,
-                'user' => $userData,
-                'latest_order' => $latestOrder,
-                'is_logged_in' => Auth::check(),
-                'role' => $user ? $user->role : 'guest'
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            // Pesanan terakhir untuk tracking
+            $latestOrder = Order::where('user_id', $user->id)
+                ->with('service')
+                ->latest()
+                ->first();
         }
+
+        return view('user.userpage', compact(
+            'services', 
+            'user', 
+            'latestOrder', 
+            'totalOrder', 
+            'totalExpense', 
+            'points'
+        ));
     }
 }

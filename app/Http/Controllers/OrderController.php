@@ -13,33 +13,39 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         try {
-           
+            // Validasi input
             $request->validate([
                 'service_id' => 'required|exists:services,id',
                 'weight' => 'required|numeric|min:1',
                 'name' => 'required|string|max:255',
-                'phone' => 'required|string|max:20',
+                'phone' => 'required|string',
                 'pickup_address' => 'required|string',
                 'pickup_date' => 'required|date',
                 'pickup_time' => 'required|string',
             ]);
 
-           
-            if (!Auth::check()) {
-                return response()->json(['message' => 'Silakan login terlebih dahulu'], 401);
-            }
+            $user = Auth::user();
 
-          
+            // Hitung harga total
             $service = Service::find($request->service_id);
             $biayaLayanan = $service->price * $request->weight;
-            $biayaJemput = 5000; 
-            $biayaAntar = 5000; 
-            $total = $biayaLayanan + $biayaJemput + $biayaAntar;
+            $biayaAntar = 10000;
+            $total = $biayaLayanan + $biayaAntar;
 
-           
+            $isDiscounted = false;
+
+            if ($user->points >= 10) {
+                $total *= 0.40;             
+                $user->decrement('points', 10);
+                $isDiscounted = true;
+            }
+
+            // Buat kode pesanan 
+            $orderCode = 'LDY-' . strtoupper(Str::random(6));
+
             $order = Order::create([
-                'order_code' => 'LDY-' . strtoupper(Str::random(6)),
-                'user_id' => Auth::id(),
+                'order_code' => $orderCode,
+                'user_id' => $user->id,
                 'service_id' => $service->id,
                 'name' => $request->name,
                 'phone' => $request->phone,
@@ -51,15 +57,33 @@ class OrderController extends Controller
                 'status' => 'Menunggu',
             ]);
 
+            // Generate pesan 
+            $adminNumber = '6287783923671';
+
+            $message  = "Halo Admin SCA Laundry, saya baru saja membuat pesanan.\n\n";
+            $message .= "Kode: *$orderCode*\n";
+            $message .= "Nama: $request->name\n";
+            $message .= "Layanan: {$service->name}\n";
+            $message .= "Berat: {$request->weight}kg\n";
+            $message .= "Total: Rp " . number_format($total, 0, ',', '.') . "\n";
+
+            if ($isDiscounted) {
+                $message .= "(Menggunakan Penukaran Poin - Diskon 60%)\n";
+            }
+
+            $message .= "\nMohon segera diproses. Terima kasih.";
+
+            $waUrl = "https://wa.me/{$adminNumber}?text=" . urlencode($message);
+
             return response()->json([
-                'message' => 'Pesanan berhasil dibuat!',
-                'order_code' => $order->order_code
+                'message' => 'Pesanan berhasil.',
+                'order_code' => $order->order_code,
+                'wa_url' => $waUrl
             ], 201);
 
         } catch (\Exception $e) {
-           
             return response()->json([
-                'message' => 'Gagal membuat pesanan',
+                'message' => 'Gagal membuat pesanan.',
                 'error' => $e->getMessage()
             ], 500);
         }

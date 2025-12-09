@@ -1,0 +1,1422 @@
+﻿<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="TdSaysPpiLnPR75nS397xEiur2Jr9RseuuCvaZMr">
+    <title>Laravel</title>
+
+    <!-- Fonts & CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="http://[::1]:5173/@vite/client"></script><link rel="stylesheet" href="http://[::1]:5173/resources/css/app.css" /><script type="module" src="http://[::1]:5173/resources/js/app.js"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; }
+        
+        /* MODE NORMAL (LIGHT) - Default State */
+        html, body { 
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        
+        body .bg-white { 
+            background-color: white; 
+            color: #1e293b; 
+        }
+        
+        body .text-slate-800 { color: #1e293b; }
+        body .text-slate-700 { color: #334155; }
+        body .text-slate-600 { color: #475569; }
+        body .text-slate-500 { color: #64748b; }
+        body .text-slate-400 { color: #94a3b8; }
+        
+        /* CSS Manual Glass Mode (Dark) */
+        .glass-mode { 
+            background-color: #0f172a !important; 
+            color: white !important; 
+        }
+        
+        .glass-mode body {
+            background-color: #0f172a !important;
+            color: white !important;
+        }
+        
+        .glass-mode .bg-white { 
+            background-color: #1e293b !important; 
+            color: white !important; 
+            border-color: #334155 !important; 
+        }
+        
+        .glass-mode .bg-slate-50 {
+            background-color: #0f172a !important;
+        }
+        
+        .glass-mode .text-slate-800 { color: white !important; }
+        .glass-mode .text-slate-700 { color: white !important; }
+        .glass-mode .text-slate-600 { color: #cbd5e1 !important; }
+        .glass-mode .text-slate-500 { color: #94a3b8 !important; }
+        .glass-mode .text-slate-400 { color: #cbd5e1 !important; }
+        
+        /* Helper Display - use Tailwind hidden class, JS handle via classList */
+        /* Tidak perlu CSS untuk icon, JS akan toggle .hidden class */
+    </style>
+
+    <!-- Script Load Tema Awal & Toggle Function -->
+    <script>
+        // Initialize theme on page load
+        function initializeTheme() {
+            const theme = localStorage.getItem('theme') || 'glass';
+            const html = document.documentElement;
+            const body = document.body;
+            
+            if (theme === 'glass') {
+                html.classList.add('glass-mode');
+                body.classList.add('glass-mode');
+            } else {
+                html.classList.remove('glass-mode');
+                body.classList.remove('glass-mode');
+            }
+        }
+        
+        // Definisi fungsi toggle tema global - HARUS DI HEAD agar bisa diakses dari sidebar
+        window.toggleTheme = function() {
+            const html = document.documentElement;
+            const body = document.body;
+            const currentTheme = localStorage.getItem('theme') || 'glass';
+            const newTheme = currentTheme === 'glass' ? 'normal' : 'glass';
+            
+            // Toggle glass-mode class
+            if (newTheme === 'glass') {
+                html.classList.add('glass-mode');
+                body.classList.add('glass-mode');
+            } else {
+                html.classList.remove('glass-mode');
+                body.classList.remove('glass-mode');
+            }
+            
+            // Update icon display via CSS class (jangan pakai inline style)
+            const lightIcons = document.querySelectorAll('.light-icon');
+            const darkIcons = document.querySelectorAll('.dark-icon');
+            
+            if (newTheme === 'glass') {
+                lightIcons.forEach(el => el.classList.add('hidden'));
+                darkIcons.forEach(el => el.classList.remove('hidden'));
+            } else {
+                lightIcons.forEach(el => el.classList.remove('hidden'));
+                darkIcons.forEach(el => el.classList.add('hidden'));
+            }
+            
+            localStorage.setItem('theme', newTheme);
+        };
+        
+        // Initialize theme saat DOM siap
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeTheme);
+        } else {
+            initializeTheme();
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <main>
+        <div class="flex min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-500">
+    
+    
+    <div id="sidebar" class="w-20 md:w-64 fixed top-0 left-0 h-full z-50 transition-all duration-300 flex flex-col justify-between bg-slate-900 text-white border-r border-white/5 shadow-2xl overflow-y-auto">
+    
+    <!-- Header -->
+    <div class="shrink-0">
+        <div class="h-20 flex items-center justify-center md:justify-start md:px-8 border-b border-white/10 bg-slate-900 sticky top-0 z-10">
+            <span class="hidden md:block font-bold text-xl tracking-wide">
+                SCA Admin
+            </span>
+            <span class="block md:hidden font-bold text-xl">SCA</span>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="mt-6 space-y-2 px-3">
+            
+            
+            <a href="http://localhost/laundryfresh/public/admin" 
+               class="w-full flex items-center p-3 rounded-xl transition-all group hover:bg-white/10 hover:text-white text-slate-400">
+                <svg class="w-5 h-5 mr-0 md:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                <span class="hidden md:block text-sm font-medium">Dashboard</span>
+            </a>
+
+            
+            <a href="#customers" 
+               class="w-full flex items-center p-3 rounded-xl transition-all group hover:bg-white/10 hover:text-white text-slate-400">
+                <svg class="w-5 h-5 mr-0 md:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                <span class="hidden md:block text-sm font-medium">Pelanggan</span>
+            </a>
+
+            
+            <a href="#services" 
+               class="w-full flex items-center p-3 rounded-xl transition-all group hover:bg-white/10 hover:text-white text-slate-400">
+                <svg class="w-5 h-5 mr-0 md:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                <span class="hidden md:block text-sm font-medium">Layanan</span>
+            </a>
+
+            
+            <a href="#finance" 
+               class="w-full flex items-center p-3 rounded-xl transition-all group hover:bg-white/10 hover:text-white text-slate-400">
+                <svg class="w-5 h-5 mr-0 md:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="hidden md:block text-sm font-medium">Keuangan</span>
+            </a>
+
+        </nav>
+    </div>
+
+    <!-- Footer Sidebar (Logout & Theme) -->
+    <div class="p-4 space-y-3 border-t border-white/5 bg-slate-900 shrink-0">
+        
+        
+        <button onclick="window.toggleTheme()" class="w-full py-3 rounded-xl text-xs font-bold border transition-all flex justify-center items-center gap-2 bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 cursor-pointer relative z-50">
+            <span class="hidden md:inline">Ganti Tema</span>
+            <span class="md:hidden">🌓</span>
+        </button>
+
+        
+        <form action="http://localhost/laundryfresh/public/logout" method="POST">
+            <input type="hidden" name="_token" value="TdSaysPpiLnPR75nS397xEiur2Jr9RseuuCvaZMr" autocomplete="off">            <button type="submit" class="w-full py-3 rounded-xl text-xs font-bold bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all flex justify-center items-center gap-2 border border-red-500/20 cursor-pointer relative z-50">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                <span class="hidden md:inline">Logout</span>
+            </button>
+        </form>
+    </div>
+</div>
+    
+    
+    <div class="flex-1 ml-20 md:ml-64 p-8 relative z-0 w-full">
+        
+        <h1 class="text-2xl font-bold mb-6 text-slate-800 dark:text-white">Admin Dashboard</h1>
+
+        
+        <div class="mb-8">
+            <div class="space-y-6 animate-fade-in">
+    <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Dashboard Overview</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Card 1: Pesanan Belum Selesai -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-[30px] shadow-lg border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:shadow-xl transition-shadow">
+            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <svg class="w-24 h-24 text-orange-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 001-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path></svg>
+            </div>
+            
+            <p class="text-xs uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">
+                Pesanan Belum Selesai
+            </p>
+            <h3 class="text-4xl font-bold mt-2 text-orange-500">
+                15
+            </h3>
+            <p class="text-xs mt-2 text-slate-400">
+                Perlu tindakan segera
+            </p>
+        </div>
+
+        <!-- Card 2: Total Pendapatan -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-[30px] shadow-lg border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:shadow-xl transition-shadow">
+            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                 <svg class="w-24 h-24 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path></svg>
+            </div>
+
+            <p class="text-xs uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">
+                Total Pendapatan
+            </p>
+            <h3 class="text-4xl font-bold mt-2 text-green-500">
+                Rp 6.648.023
+            </h3>
+            <p class="text-xs mt-2 text-slate-400">
+                Akumulasi semua order
+            </p>
+        </div>
+
+        <!-- Card 3: Total Pelanggan -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-[30px] shadow-lg border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:shadow-xl transition-shadow">
+            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <svg class="w-24 h-24 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path></svg>
+            </div>
+
+            <p class="text-xs uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">
+                Total Pesanan
+            </p>
+            <h3 class="text-4xl font-bold mt-2 text-blue-600">
+                25
+            </h3>
+            <p class="text-xs mt-2 text-slate-400">
+                Total transaksi tercatat
+            </p>
+        </div>
+
+    </div>
+</div>        </div>
+
+        
+        <div class="mb-8 scroll-mt-20" id="customers">
+            <div class="space-y-6 animate-fade-in relative">
+    
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Data Pesanan Pelanggan</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400">
+                Klik pada baris pelanggan untuk melihat detail & chat WhatsApp.
+            </p>
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="bg-white dark:bg-slate-800 rounded-[30px] shadow-lg overflow-hidden border border-slate-100 dark:border-slate-700">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                <thead class="bg-blue-50 dark:bg-slate-700 border-b border-blue-100 dark:border-slate-600 text-slate-700 dark:text-slate-200">
+                    <tr>
+                        <th class="p-4">Order ID</th>
+                        <th class="p-4">Nama & Tanggal</th>
+                        <th class="p-4">Layanan</th>
+                        <th class="p-4">Status</th>
+                        <th class="p-4 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50 dark:divide-slate-700">
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:14,&quot;order_code&quot;:&quot;ORD-FY876&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:4,&quot;name&quot;:&quot;Rashad Breitenberg&quot;,&quot;phone&quot;:&quot;1-904-225-3911&quot;,&quot;pickup_address&quot;:&quot;59259 Halvorson Island Suite 952\nSouth Meaganshire, WI 16902-1873&quot;,&quot;pickup_date&quot;:&quot;1993-10-23&quot;,&quot;pickup_time&quot;:&quot;23:45&quot;,&quot;weight&quot;:28,&quot;total_price&quot;:143283,&quot;status&quot;:&quot;Disetrika&quot;,&quot;created_at&quot;:&quot;2025-12-06T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-FY876</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Rashad Breitenberg</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">06 Dec 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci + Setrika</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-yellow-100 text-yellow-700 border-yellow-200 order-status-badge-14">
+                                Disetrika
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:15,&quot;order_code&quot;:&quot;ORD-JJ115&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:2,&quot;name&quot;:&quot;Maximo Brakus&quot;,&quot;phone&quot;:&quot;(857) 968-9578&quot;,&quot;pickup_address&quot;:&quot;97938 Ulices Forks Suite 402\nHowellton, AR 32495&quot;,&quot;pickup_date&quot;:&quot;1994-12-19&quot;,&quot;pickup_time&quot;:&quot;10:43&quot;,&quot;weight&quot;:40,&quot;total_price&quot;:333817,&quot;status&quot;:&quot;Selesai&quot;,&quot;created_at&quot;:&quot;2025-12-04T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-JJ115</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Maximo Brakus</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">04 Dec 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Express</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-green-100 text-green-700 border-green-200 order-status-badge-15">
+                                Selesai
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:22,&quot;order_code&quot;:&quot;ORD-OQ848&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:1,&quot;name&quot;:&quot;Mrs. Eve Metz Sr.&quot;,&quot;phone&quot;:&quot;(539) 555-1375&quot;,&quot;pickup_address&quot;:&quot;275 Russel Camp Apt. 922\nBoganberg, MI 96569-6976&quot;,&quot;pickup_date&quot;:&quot;2024-02-27&quot;,&quot;pickup_time&quot;:&quot;05:26&quot;,&quot;weight&quot;:6,&quot;total_price&quot;:397191,&quot;status&quot;:&quot;Disetrika&quot;,&quot;created_at&quot;:&quot;2025-11-18T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-OQ848</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Mrs. Eve Metz Sr.</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">18 Nov 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Reguler</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-yellow-100 text-yellow-700 border-yellow-200 order-status-badge-22">
+                                Disetrika
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:21,&quot;order_code&quot;:&quot;ORD-RQ918&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:1,&quot;name&quot;:&quot;Melba McClure&quot;,&quot;phone&quot;:&quot;+1.417.837.4746&quot;,&quot;pickup_address&quot;:&quot;304 Eulalia Stream Suite 285\nJermainmouth, SD 84560&quot;,&quot;pickup_date&quot;:&quot;2009-01-27&quot;,&quot;pickup_time&quot;:&quot;08:40&quot;,&quot;weight&quot;:22,&quot;total_price&quot;:431970,&quot;status&quot;:&quot;Menunggu&quot;,&quot;created_at&quot;:&quot;2025-11-15T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-RQ918</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Melba McClure</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">15 Nov 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Reguler</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-red-100 text-red-700 border-red-200 order-status-badge-21">
+                                Menunggu
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:23,&quot;order_code&quot;:&quot;ORD-ZH612&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:3,&quot;name&quot;:&quot;Sherman O&#039;Conner V&quot;,&quot;phone&quot;:&quot;334.756.8070&quot;,&quot;pickup_address&quot;:&quot;198 Douglas Motorway Suite 774\nEast Gailview, ME 39221&quot;,&quot;pickup_date&quot;:&quot;1970-03-06&quot;,&quot;pickup_time&quot;:&quot;11:23&quot;,&quot;weight&quot;:9,&quot;total_price&quot;:269093,&quot;status&quot;:&quot;Menunggu&quot;,&quot;created_at&quot;:&quot;2025-11-15T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-ZH612</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Sherman O&#039;Conner V</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">15 Nov 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Setrika</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-red-100 text-red-700 border-red-200 order-status-badge-23">
+                                Menunggu
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:25,&quot;order_code&quot;:&quot;ORD-ZY337&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:2,&quot;name&quot;:&quot;Billie Beahan&quot;,&quot;phone&quot;:&quot;+1-820-249-7670&quot;,&quot;pickup_address&quot;:&quot;4594 Raul Street Suite 659\nLake Abigail, IN 80527&quot;,&quot;pickup_date&quot;:&quot;2002-04-08&quot;,&quot;pickup_time&quot;:&quot;23:03&quot;,&quot;weight&quot;:5,&quot;total_price&quot;:462721,&quot;status&quot;:&quot;Selesai&quot;,&quot;created_at&quot;:&quot;2025-11-15T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-ZY337</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Billie Beahan</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">15 Nov 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Express</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-green-100 text-green-700 border-green-200 order-status-badge-25">
+                                Selesai
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:19,&quot;order_code&quot;:&quot;ORD-HM223&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:4,&quot;name&quot;:&quot;Dr. Efren Prohaska DDS&quot;,&quot;phone&quot;:&quot;+1 (912) 357-1032&quot;,&quot;pickup_address&quot;:&quot;2190 Orn Branch\nKeeblermouth, HI 06141-7197&quot;,&quot;pickup_date&quot;:&quot;2019-03-28&quot;,&quot;pickup_time&quot;:&quot;23:11&quot;,&quot;weight&quot;:34,&quot;total_price&quot;:184745,&quot;status&quot;:&quot;Disetrika&quot;,&quot;created_at&quot;:&quot;2025-11-13T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-HM223</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Dr. Efren Prohaska DDS</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">13 Nov 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci + Setrika</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-yellow-100 text-yellow-700 border-yellow-200 order-status-badge-19">
+                                Disetrika
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:24,&quot;order_code&quot;:&quot;ORD-SN645&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:3,&quot;name&quot;:&quot;Reynold Pfannerstill I&quot;,&quot;phone&quot;:&quot;228-938-6445&quot;,&quot;pickup_address&quot;:&quot;573 Lesly Place Apt. 838\nNorth Vellaton, TN 34732&quot;,&quot;pickup_date&quot;:&quot;2003-04-22&quot;,&quot;pickup_time&quot;:&quot;12:18&quot;,&quot;weight&quot;:17,&quot;total_price&quot;:485743,&quot;status&quot;:&quot;Selesai&quot;,&quot;created_at&quot;:&quot;2025-11-05T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-SN645</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Reynold Pfannerstill I</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">05 Nov 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Setrika</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-green-100 text-green-700 border-green-200 order-status-badge-24">
+                                Selesai
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:7,&quot;order_code&quot;:&quot;ORD-LO024&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:4,&quot;name&quot;:&quot;Mr. Reggie Keebler&quot;,&quot;phone&quot;:&quot;740.721.4886&quot;,&quot;pickup_address&quot;:&quot;3326 Bartoletti Field\nJohnsonberg, MN 11244&quot;,&quot;pickup_date&quot;:&quot;2005-08-03&quot;,&quot;pickup_time&quot;:&quot;15:40&quot;,&quot;weight&quot;:18,&quot;total_price&quot;:245150,&quot;status&quot;:&quot;Selesai&quot;,&quot;created_at&quot;:&quot;2025-10-31T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-LO024</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Mr. Reggie Keebler</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">31 Oct 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci + Setrika</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-green-100 text-green-700 border-green-200 order-status-badge-7">
+                                Selesai
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:11,&quot;order_code&quot;:&quot;ORD-NC741&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:1,&quot;name&quot;:&quot;Mr. Chesley Zieme Jr.&quot;,&quot;phone&quot;:&quot;+1-938-812-9023&quot;,&quot;pickup_address&quot;:&quot;999 Renner Loop\nWillardstad, NE 77296&quot;,&quot;pickup_date&quot;:&quot;2018-03-04&quot;,&quot;pickup_time&quot;:&quot;13:26&quot;,&quot;weight&quot;:49,&quot;total_price&quot;:318783,&quot;status&quot;:&quot;Menunggu&quot;,&quot;created_at&quot;:&quot;2025-10-27T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-NC741</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Mr. Chesley Zieme Jr.</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">27 Oct 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Reguler</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-red-100 text-red-700 border-red-200 order-status-badge-11">
+                                Menunggu
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:4,&quot;order_code&quot;:&quot;ORD-PH847&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:3,&quot;name&quot;:&quot;Marge Kuhic IV&quot;,&quot;phone&quot;:&quot;726-788-6259&quot;,&quot;pickup_address&quot;:&quot;4463 Nola Rapids\nO&#039;Haraside, AK 18406&quot;,&quot;pickup_date&quot;:&quot;1976-07-11&quot;,&quot;pickup_time&quot;:&quot;13:39&quot;,&quot;weight&quot;:44,&quot;total_price&quot;:434569,&quot;status&quot;:&quot;Dicuci&quot;,&quot;created_at&quot;:&quot;2025-10-25T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-PH847</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Marge Kuhic IV</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">25 Oct 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Setrika</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-yellow-100 text-yellow-700 border-yellow-200 order-status-badge-4">
+                                Dicuci
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:5,&quot;order_code&quot;:&quot;ORD-DN531&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:4,&quot;name&quot;:&quot;Dr. Hallie Kassulke I&quot;,&quot;phone&quot;:&quot;+1.959.822.5664&quot;,&quot;pickup_address&quot;:&quot;301 Abbott Gardens Apt. 967\nRosaleemouth, ID 27756&quot;,&quot;pickup_date&quot;:&quot;1984-07-26&quot;,&quot;pickup_time&quot;:&quot;19:07&quot;,&quot;weight&quot;:27,&quot;total_price&quot;:253880,&quot;status&quot;:&quot;Selesai&quot;,&quot;created_at&quot;:&quot;2025-10-25T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-DN531</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Dr. Hallie Kassulke I</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">25 Oct 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci + Setrika</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-green-100 text-green-700 border-green-200 order-status-badge-5">
+                                Selesai
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:3,&quot;order_code&quot;:&quot;ORD-WI367&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:2,&quot;name&quot;:&quot;Dr. Elmore Reichert&quot;,&quot;phone&quot;:&quot;+1-608-606-2455&quot;,&quot;pickup_address&quot;:&quot;6384 August Row\nJavonteview, OK 30732-7923&quot;,&quot;pickup_date&quot;:&quot;2020-10-21&quot;,&quot;pickup_time&quot;:&quot;17:42&quot;,&quot;weight&quot;:12,&quot;total_price&quot;:413668,&quot;status&quot;:&quot;Dicuci&quot;,&quot;created_at&quot;:&quot;2025-10-24T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-WI367</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Dr. Elmore Reichert</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">24 Oct 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Express</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-yellow-100 text-yellow-700 border-yellow-200 order-status-badge-3">
+                                Dicuci
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:8,&quot;order_code&quot;:&quot;ORD-OI597&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:2,&quot;name&quot;:&quot;Alysha Labadie&quot;,&quot;phone&quot;:&quot;308.358.8610&quot;,&quot;pickup_address&quot;:&quot;400 Ritchie Summit Apt. 763\nTroyhaven, LA 04864&quot;,&quot;pickup_date&quot;:&quot;1972-01-03&quot;,&quot;pickup_time&quot;:&quot;02:55&quot;,&quot;weight&quot;:4,&quot;total_price&quot;:146411,&quot;status&quot;:&quot;Disetrika&quot;,&quot;created_at&quot;:&quot;2025-10-19T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-OI597</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Alysha Labadie</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">19 Oct 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Express</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-yellow-100 text-yellow-700 border-yellow-200 order-status-badge-8">
+                                Disetrika
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:9,&quot;order_code&quot;:&quot;ORD-WQ677&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:4,&quot;name&quot;:&quot;Antonia Turcotte&quot;,&quot;phone&quot;:&quot;+1-854-505-0484&quot;,&quot;pickup_address&quot;:&quot;53310 Herzog Cliff\nSouth Guy, AL 73509&quot;,&quot;pickup_date&quot;:&quot;1983-10-19&quot;,&quot;pickup_time&quot;:&quot;22:32&quot;,&quot;weight&quot;:36,&quot;total_price&quot;:360019,&quot;status&quot;:&quot;Disetrika&quot;,&quot;created_at&quot;:&quot;2025-10-15T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-WQ677</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Antonia Turcotte</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">15 Oct 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci + Setrika</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-yellow-100 text-yellow-700 border-yellow-200 order-status-badge-9">
+                                Disetrika
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:2,&quot;order_code&quot;:&quot;ORD-AH863&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:1,&quot;name&quot;:&quot;Savanah Marks&quot;,&quot;phone&quot;:&quot;580-948-8918&quot;,&quot;pickup_address&quot;:&quot;785 Kyra Shore\nQuitzonshire, WV 96710-4583&quot;,&quot;pickup_date&quot;:&quot;1980-01-20&quot;,&quot;pickup_time&quot;:&quot;22:36&quot;,&quot;weight&quot;:13,&quot;total_price&quot;:174469,&quot;status&quot;:&quot;Disetrika&quot;,&quot;created_at&quot;:&quot;2025-10-14T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-AH863</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Savanah Marks</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">14 Oct 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Reguler</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-yellow-100 text-yellow-700 border-yellow-200 order-status-badge-2">
+                                Disetrika
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:12,&quot;order_code&quot;:&quot;ORD-VD508&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:1,&quot;name&quot;:&quot;Dr. Ariel Mills I&quot;,&quot;phone&quot;:&quot;+15013755858&quot;,&quot;pickup_address&quot;:&quot;3873 Dominique Alley\nSouth Haleigh, DC 69625-4094&quot;,&quot;pickup_date&quot;:&quot;2013-10-01&quot;,&quot;pickup_time&quot;:&quot;09:44&quot;,&quot;weight&quot;:20,&quot;total_price&quot;:113332,&quot;status&quot;:&quot;Selesai&quot;,&quot;created_at&quot;:&quot;2025-10-10T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-VD508</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Dr. Ariel Mills I</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">10 Oct 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Reguler</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-green-100 text-green-700 border-green-200 order-status-badge-12">
+                                Selesai
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:18,&quot;order_code&quot;:&quot;ORD-NM035&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:1,&quot;name&quot;:&quot;Winfield Tillman&quot;,&quot;phone&quot;:&quot;1-352-334-6239&quot;,&quot;pickup_address&quot;:&quot;80537 Abernathy Estate Suite 591\nBulahberg, MD 53861-3661&quot;,&quot;pickup_date&quot;:&quot;1985-12-10&quot;,&quot;pickup_time&quot;:&quot;02:58&quot;,&quot;weight&quot;:21,&quot;total_price&quot;:116462,&quot;status&quot;:&quot;Disetrika&quot;,&quot;created_at&quot;:&quot;2025-09-30T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-NM035</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Winfield Tillman</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">30 Sep 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Reguler</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-yellow-100 text-yellow-700 border-yellow-200 order-status-badge-18">
+                                Disetrika
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:17,&quot;order_code&quot;:&quot;ORD-VF086&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:1,&quot;name&quot;:&quot;Teagan Turner&quot;,&quot;phone&quot;:&quot;949.354.2919&quot;,&quot;pickup_address&quot;:&quot;234 Oda Parks\nPort Jimmieburgh, AR 78028-8927&quot;,&quot;pickup_date&quot;:&quot;1992-08-09&quot;,&quot;pickup_time&quot;:&quot;22:08&quot;,&quot;weight&quot;:50,&quot;total_price&quot;:161943,&quot;status&quot;:&quot;Selesai&quot;,&quot;created_at&quot;:&quot;2025-09-26T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-VF086</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Teagan Turner</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">26 Sep 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Reguler</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-green-100 text-green-700 border-green-200 order-status-badge-17">
+                                Selesai
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:1,&quot;order_code&quot;:&quot;ORD-RG867&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:1,&quot;name&quot;:&quot;Corine Witting&quot;,&quot;phone&quot;:&quot;+1.726.459.3950&quot;,&quot;pickup_address&quot;:&quot;62155 Candida Circle Suite 291\nCreminview, NC 36302-6574&quot;,&quot;pickup_date&quot;:&quot;2010-02-21&quot;,&quot;pickup_time&quot;:&quot;10:56&quot;,&quot;weight&quot;:16,&quot;total_price&quot;:129114,&quot;status&quot;:&quot;Dicuci&quot;,&quot;created_at&quot;:&quot;2025-09-25T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-RG867</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Corine Witting</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">25 Sep 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Reguler</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-yellow-100 text-yellow-700 border-yellow-200 order-status-badge-1">
+                                Dicuci
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:10,&quot;order_code&quot;:&quot;ORD-CK005&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:2,&quot;name&quot;:&quot;Kariane Gusikowski&quot;,&quot;phone&quot;:&quot;(203) 722-6054&quot;,&quot;pickup_address&quot;:&quot;804 Herzog Tunnel Suite 689\nLake Jennings, OR 63787-5279&quot;,&quot;pickup_date&quot;:&quot;2006-12-21&quot;,&quot;pickup_time&quot;:&quot;04:22&quot;,&quot;weight&quot;:39,&quot;total_price&quot;:325673,&quot;status&quot;:&quot;Menunggu&quot;,&quot;created_at&quot;:&quot;2025-09-25T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-CK005</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Kariane Gusikowski</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">25 Sep 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Express</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-red-100 text-red-700 border-red-200 order-status-badge-10">
+                                Menunggu
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:16,&quot;order_code&quot;:&quot;ORD-SK547&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:2,&quot;name&quot;:&quot;Cletus Pollich III&quot;,&quot;phone&quot;:&quot;(469) 228-6006&quot;,&quot;pickup_address&quot;:&quot;811 Schmitt Wall\nLake Kaya, ID 80562-1597&quot;,&quot;pickup_date&quot;:&quot;1974-05-23&quot;,&quot;pickup_time&quot;:&quot;22:42&quot;,&quot;weight&quot;:21,&quot;total_price&quot;:314987,&quot;status&quot;:&quot;Selesai&quot;,&quot;created_at&quot;:&quot;2025-09-23T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-SK547</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Cletus Pollich III</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">23 Sep 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Express</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-green-100 text-green-700 border-green-200 order-status-badge-16">
+                                Selesai
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:6,&quot;order_code&quot;:&quot;ORD-HD989&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:3,&quot;name&quot;:&quot;Prof. Vicente Feeney DDS&quot;,&quot;phone&quot;:&quot;1-262-333-8358&quot;,&quot;pickup_address&quot;:&quot;78204 D&#039;angelo Loop Apt. 282\nKesslerton, UT 11692-2841&quot;,&quot;pickup_date&quot;:&quot;1970-06-01&quot;,&quot;pickup_time&quot;:&quot;08:45&quot;,&quot;weight&quot;:27,&quot;total_price&quot;:82690,&quot;status&quot;:&quot;Menunggu&quot;,&quot;created_at&quot;:&quot;2025-09-22T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-HD989</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Prof. Vicente Feeney DDS</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">22 Sep 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Setrika</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-red-100 text-red-700 border-red-200 order-status-badge-6">
+                                Menunggu
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:20,&quot;order_code&quot;:&quot;ORD-IE355&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:2,&quot;name&quot;:&quot;Vicenta Franecki&quot;,&quot;phone&quot;:&quot;(458) 238-1778&quot;,&quot;pickup_address&quot;:&quot;429 Armand Curve Suite 659\nNew Osborne, CA 57398&quot;,&quot;pickup_date&quot;:&quot;1977-03-28&quot;,&quot;pickup_time&quot;:&quot;11:53&quot;,&quot;weight&quot;:46,&quot;total_price&quot;:258232,&quot;status&quot;:&quot;Selesai&quot;,&quot;created_at&quot;:&quot;2025-09-21T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-IE355</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Vicenta Franecki</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">21 Sep 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Express</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-green-100 text-green-700 border-green-200 order-status-badge-20">
+                                Selesai
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                        <tr 
+                        onclick="openModal({&quot;id&quot;:13,&quot;order_code&quot;:&quot;ORD-IS690&quot;,&quot;user_id&quot;:1,&quot;service_id&quot;:1,&quot;name&quot;:&quot;Webster Leannon&quot;,&quot;phone&quot;:&quot;925-493-5322&quot;,&quot;pickup_address&quot;:&quot;9881 Lesch Skyway Suite 225\nEnahaven, IL 52885-8845&quot;,&quot;pickup_date&quot;:&quot;1970-06-25&quot;,&quot;pickup_time&quot;:&quot;09:47&quot;,&quot;weight&quot;:48,&quot;total_price&quot;:90078,&quot;status&quot;:&quot;Selesai&quot;,&quot;created_at&quot;:&quot;2025-09-20T11:01:16.000000Z&quot;,&quot;updated_at&quot;:&quot;2025-12-07T11:01:16.000000Z&quot;})"
+                        class="cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group"
+                    >
+                        <td class="p-4 font-bold text-slate-700 dark:text-white">#ORD-IS690</td>
+                        <td class="p-4">
+                            <p class="font-semibold text-slate-800 dark:text-white">Webster Leannon</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">20 Sep 2025</p>
+                        </td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">Cuci Reguler</td>
+                        <td class="p-4">
+                                                        <!-- Tambahkan class unik order-status-badge-{id} agar bisa diupdate JS -->
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border bg-green-100 text-green-700 border-green-200 order-status-badge-13">
+                                Selesai
+                            </span>
+                        </td>
+                        <td class="p-4 text-right text-blue-500 font-bold text-xs group-hover:translate-x-1 transition-transform">
+                            Detail &gt;
+                        </td>
+                    </tr>
+                                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Overlay -->
+<div id="orderModal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-opacity opacity-0">
+    <!-- Modal Content -->
+    <div class="w-full max-w-2xl bg-white dark:bg-slate-900 text-slate-800 dark:text-white shadow-2xl rounded-[30px] p-8 relative overflow-y-auto max-h-[90vh] transform scale-95 transition-transform duration-300" id="modalContent">
+        
+        <button onclick="closeModal()" class="absolute top-6 right-6 text-2xl opacity-50 hover:opacity-100 transition">
+            &times;
+        </button>
+
+        <h3 class="text-2xl font-bold mb-1">Detail Pesanan</h3>
+        <div class="flex items-center gap-3 mb-6">
+            <span id="modalOrderId" class="text-sm font-mono px-2 py-1 rounded bg-gray-100 dark:bg-slate-800"></span>
+            <span id="modalStatusBadge" class="text-xs px-2 py-1 rounded-full font-bold"></span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Info Customer -->
+            <div class="space-y-5">
+                <div>
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Pelanggan</label>
+                    <p id="modalCustomerName" class="font-bold text-lg"></p>
+                    <p id="modalCustomerPhone" class="text-sm text-slate-600 dark:text-slate-400"></p>
+
+                    <a id="waButton" href="#" target="_blank" class="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600 transition shadow-lg shadow-green-500/30 w-full justify-center">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" /></svg>
+                        Chat WhatsApp
+                    </a>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Lokasi Penjemputan</label>
+                    <div id="modalAddress" class="p-3 rounded-xl mt-1 text-sm leading-relaxed bg-gray-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300"></div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Waktu Jemput</label>
+                    <div class="flex gap-4 mt-1">
+                        <div class="flex-1 p-3 rounded-xl text-sm bg-gray-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                            📅 <span id="modalPickupDate"></span>
+                        </div>
+                        <div class="flex-1 p-3 rounded-xl text-sm bg-gray-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                            ⏰ <span id="modalPickupTime"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Biaya & Aksi -->
+            <div class="space-y-5">
+                <div class="p-5 rounded-2xl bg-blue-50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700">
+                    <h4 class="font-bold mb-3 text-blue-500">Rincian Biaya</h4>
+                    <div class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                        <div class="flex justify-between">
+                            <span>Layanan</span>
+                            <span id="modalService"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Berat</span>
+                            <span id="modalWeight"></span>
+                        </div>
+                        <div class="border-t border-dashed border-blue-300 dark:border-slate-600 my-2"></div>
+                        <div class="flex justify-between font-bold text-lg text-slate-800 dark:text-white">
+                            <span>Total</span>
+                            <span id="modalTotal"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold uppercase tracking-wider block mb-2 text-slate-400">Update Status</label>
+                    <!-- INI CONTAINER TOMBOL YANG MUNGKIN HILANG SEBELUMNYA -->
+                    <div class="grid grid-cols-2 gap-2" id="statusButtonsContainer">
+                        <!-- Buttons akan dirender oleh Javascript disini -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="closeModal()" class="w-full mt-8 py-4 rounded-xl font-bold text-sm bg-blue-600 text-white hover:bg-blue-700 transition shadow-lg shadow-blue-500/30">
+            Tutup
+        </button>
+    </div>
+</div>
+
+<script>
+    let currentOrder = null;
+    const statusOptions = ["Menunggu", "Dicuci", "Disetrika", "Selesai"];
+
+    function openModal(order) {
+        currentOrder = order;
+        const modal = document.getElementById('orderModal');
+        const content = document.getElementById('modalContent');
+        
+        // Populate Data
+        document.getElementById('modalOrderId').innerText = '#' + (order.order_code || order.id);
+        document.getElementById('modalCustomerName').innerText = order.name;
+        document.getElementById('modalCustomerPhone').innerText = order.phone || '-';
+        document.getElementById('modalAddress').innerText = order.pickup_address || 'Tidak ada data alamat';
+        document.getElementById('modalPickupDate').innerText = order.pickup_date || '-';
+        document.getElementById('modalPickupTime').innerText = order.pickup_time || '-';
+        
+        const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' });
+        document.getElementById('modalTotal').innerText = formatter.format(order.total_price || 0);
+        
+        document.getElementById('modalService').innerText = order.service ? order.service.name : '-';
+        document.getElementById('modalWeight').innerText = order.weight + ' Kg';
+
+        updateModalStatusUI(order.status);
+        setupWhatsAppLink(order);
+        
+        // Render Tombol Status
+        renderStatusButtons(order.status);
+
+        // Show Modal
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        }, 10);
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('orderModal');
+        const content = document.getElementById('modalContent');
+
+        modal.classList.add('opacity-0');
+        content.classList.remove('scale-100');
+        content.classList.add('scale-95');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 300);
+    }
+
+    function getStatusClass(status) {
+        if (status === 'Selesai') return 'bg-green-100 text-green-700 border-green-200';
+        if (status === 'Menunggu') return 'bg-red-100 text-red-700 border-red-200';
+        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+    }
+
+    function updateModalStatusUI(status) {
+        const badge = document.getElementById('modalStatusBadge');
+        badge.innerText = status;
+        badge.className = "text-xs px-2 py-1 rounded-full font-bold transition-all border " + getStatusClass(status);
+    }
+
+    function renderStatusButtons(currentStatus) {
+        const container = document.getElementById('statusButtonsContainer');
+        if (!container) return console.error('Container buttons not found');
+        
+        container.innerHTML = '';
+
+        statusOptions.forEach(status => {
+            const btn = document.createElement('button');
+            const isActive = currentStatus === status;
+            
+            // Perhatikan styling dark mode disini
+            btn.className = `px-3 py-2 rounded-lg text-xs font-bold border transition-all ${
+                isActive 
+                ? 'bg-blue-600 border-blue-600 text-white shadow-md' 
+                : 'border-slate-200 hover:bg-slate-100 text-slate-600 bg-white dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:hover:bg-slate-600'
+            }`;
+            btn.innerText = status;
+            btn.onclick = () => updateStatus(status);
+            
+            container.appendChild(btn);
+        });
+    }
+
+    function setupWhatsAppLink(order) {
+        const btn = document.getElementById('waButton');
+        if (!order.phone) { btn.href = "#"; return; }
+
+        let number = order.phone.toString().replace(/\D/g, "");
+        if (number.startsWith("0")) number = "62" + number.substring(1);
+
+        const message = `Halo Kak ${order.name}, update pesanan Laundry #${order.order_code || order.id}. Status: ${order.status}. Terima kasih!`;
+        btn.href = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+    }
+
+    function updateStatus(newStatus) {
+        if(!currentOrder) return;
+
+        // 1. Optimistic UI (Langsung ganti tampilan modal)
+        updateModalStatusUI(newStatus);
+        renderStatusButtons(newStatus);
+        
+        const oldStatus = currentOrder.status;
+        currentOrder.status = newStatus;
+
+        // 2. Fetch ke Server
+        fetch(`/admin/order/${currentOrder.id}/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(async res => {
+            if (!res.ok) throw new Error("Gagal update status");
+            return res.json();
+        })
+        .then(data => {
+            if(data.success) {
+                // 3. Update Tabel Utama secara Manual (DOM) - TANPA RELOAD
+                const tableBadge = document.querySelector(`.order-status-badge-${currentOrder.id}`);
+                if(tableBadge) {
+                    tableBadge.innerText = newStatus;
+                    tableBadge.className = `px-3 py-1 rounded-full text-xs font-bold border order-status-badge-${currentOrder.id} ` + getStatusClass(newStatus);
+                }
+                setupWhatsAppLink(currentOrder);
+            } else {
+                alert('Gagal update status');
+                // Revert jika gagal
+                currentOrder.status = oldStatus;
+                updateModalStatusUI(oldStatus);
+                renderStatusButtons(oldStatus);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal koneksi: ' + error.message);
+            currentOrder.status = oldStatus;
+            updateModalStatusUI(oldStatus);
+            renderStatusButtons(oldStatus);
+        });
+    }
+
+    document.getElementById('orderModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+</script>        </div>
+
+        
+        <div class="mb-8 scroll-mt-20" id="services">
+            <div class="space-y-6 animate-fade-in relative">
+
+    
+        
+    
+    <div id="saving-indicator" class="fixed top-4 right-4 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-xl z-50 hidden items-center gap-2 transition-all">
+        <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        Menyimpan Harga...
+    </div>
+
+    <!-- Header Section -->
+    <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Kelola Layanan & Harga</h2>
+        <button onclick="toggleModal(true)" class="px-6 py-2 rounded-xl font-bold text-sm bg-blue-600 text-white hover:bg-blue-700 transition shadow-lg shadow-blue-500/30">
+            + Tambah Layanan
+        </button>
+    </div>
+
+    <!-- Grid List Layanan -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-[30px] flex justify-between items-center shadow-md hover:shadow-lg transition-all border border-slate-100 dark:border-slate-700 group relative">
+                <div class="flex-1">
+                    <h4 class="font-bold text-lg text-slate-800 dark:text-white">Cuci Reguler</h4>
+                    <p class="text-xs text-slate-400">Harga per /kg</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="text-slate-400 font-bold text-sm">Rp</span>
+                    
+                    
+                    <input 
+                        type="number" 
+                        step="1000"
+                        value="5000"
+                        oninput="debounceUpdatePrice(1, this.value)"
+                        class="w-28 p-2 rounded-lg text-right font-bold outline-none border border-slate-200 dark:border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-slate-700 dark:text-white dark:bg-slate-700"
+                    />
+
+                    
+                    <form action="http://localhost/laundryfresh/public/admin/service/1" method="POST" onsubmit="return confirm('Hapus layanan Cuci Reguler?');">
+                        <input type="hidden" name="_token" value="TdSaysPpiLnPR75nS397xEiur2Jr9RseuuCvaZMr" autocomplete="off">                        <input type="hidden" name="_method" value="DELETE">                        <button type="submit" class="p-2.5 rounded-lg transition-all duration-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white" title="Hapus Layanan">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-[30px] flex justify-between items-center shadow-md hover:shadow-lg transition-all border border-slate-100 dark:border-slate-700 group relative">
+                <div class="flex-1">
+                    <h4 class="font-bold text-lg text-slate-800 dark:text-white">Cuci Express</h4>
+                    <p class="text-xs text-slate-400">Harga per /kg</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="text-slate-400 font-bold text-sm">Rp</span>
+                    
+                    
+                    <input 
+                        type="number" 
+                        step="1000"
+                        value="7500"
+                        oninput="debounceUpdatePrice(2, this.value)"
+                        class="w-28 p-2 rounded-lg text-right font-bold outline-none border border-slate-200 dark:border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-slate-700 dark:text-white dark:bg-slate-700"
+                    />
+
+                    
+                    <form action="http://localhost/laundryfresh/public/admin/service/2" method="POST" onsubmit="return confirm('Hapus layanan Cuci Express?');">
+                        <input type="hidden" name="_token" value="TdSaysPpiLnPR75nS397xEiur2Jr9RseuuCvaZMr" autocomplete="off">                        <input type="hidden" name="_method" value="DELETE">                        <button type="submit" class="p-2.5 rounded-lg transition-all duration-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white" title="Hapus Layanan">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-[30px] flex justify-between items-center shadow-md hover:shadow-lg transition-all border border-slate-100 dark:border-slate-700 group relative">
+                <div class="flex-1">
+                    <h4 class="font-bold text-lg text-slate-800 dark:text-white">Setrika</h4>
+                    <p class="text-xs text-slate-400">Harga per /kg</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="text-slate-400 font-bold text-sm">Rp</span>
+                    
+                    
+                    <input 
+                        type="number" 
+                        step="1000"
+                        value="3000"
+                        oninput="debounceUpdatePrice(3, this.value)"
+                        class="w-28 p-2 rounded-lg text-right font-bold outline-none border border-slate-200 dark:border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-slate-700 dark:text-white dark:bg-slate-700"
+                    />
+
+                    
+                    <form action="http://localhost/laundryfresh/public/admin/service/3" method="POST" onsubmit="return confirm('Hapus layanan Setrika?');">
+                        <input type="hidden" name="_token" value="TdSaysPpiLnPR75nS397xEiur2Jr9RseuuCvaZMr" autocomplete="off">                        <input type="hidden" name="_method" value="DELETE">                        <button type="submit" class="p-2.5 rounded-lg transition-all duration-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white" title="Hapus Layanan">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-[30px] flex justify-between items-center shadow-md hover:shadow-lg transition-all border border-slate-100 dark:border-slate-700 group relative">
+                <div class="flex-1">
+                    <h4 class="font-bold text-lg text-slate-800 dark:text-white">Cuci + Setrika</h4>
+                    <p class="text-xs text-slate-400">Harga per /kg</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="text-slate-400 font-bold text-sm">Rp</span>
+                    
+                    
+                    <input 
+                        type="number" 
+                        step="1000"
+                        value="8000"
+                        oninput="debounceUpdatePrice(4, this.value)"
+                        class="w-28 p-2 rounded-lg text-right font-bold outline-none border border-slate-200 dark:border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-slate-700 dark:text-white dark:bg-slate-700"
+                    />
+
+                    
+                    <form action="http://localhost/laundryfresh/public/admin/service/4" method="POST" onsubmit="return confirm('Hapus layanan Cuci + Setrika?');">
+                        <input type="hidden" name="_token" value="TdSaysPpiLnPR75nS397xEiur2Jr9RseuuCvaZMr" autocomplete="off">                        <input type="hidden" name="_method" value="DELETE">                        <button type="submit" class="p-2.5 rounded-lg transition-all duration-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white" title="Hapus Layanan">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            </div>
+
+    <div class="flex justify-end mt-4">
+        <p class="text-xs italic text-slate-400">
+            *Harga otomatis tersimpan saat diketik. Pastikan kelipatan 1000.
+        </p>
+    </div>
+
+    <!-- Modal Tambah Layanan -->
+    <div id="addModal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-opacity opacity-0">
+        <div id="modalContent" class="w-full max-w-md bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-[30px] p-8 relative transform scale-95 transition-transform duration-300 shadow-2xl">
+            
+            <button onclick="toggleModal(false)" class="absolute top-4 right-4 text-2xl opacity-50 hover:opacity-100 transition">
+                &times;
+            </button>
+
+            <h3 class="text-xl font-bold mb-6">Tambah Layanan Baru</h3>
+
+            
+            <form action="http://localhost/laundryfresh/public/admin/service/add" method="POST">
+                <input type="hidden" name="_token" value="TdSaysPpiLnPR75nS397xEiur2Jr9RseuuCvaZMr" autocomplete="off">                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-slate-400">Nama Layanan</label>
+                        <input type="text" name="name" required placeholder="Contoh: Cuci Bedcover" class="w-full p-3 rounded-xl outline-none border border-slate-200 dark:border-slate-600 focus:border-blue-500 transition-colors bg-slate-50 dark:bg-slate-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-slate-400">Harga per Kg (Kelipatan 1000)</label>
+                        <input type="number" name="price" step="1000" required placeholder="Contoh: 8000" class="w-full p-3 rounded-xl outline-none border border-slate-200 dark:border-slate-600 focus:border-blue-500 transition-colors bg-slate-50 dark:bg-slate-700 dark:text-white">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full mt-8 py-3 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition shadow-lg shadow-blue-500/30">
+                    Simpan Layanan
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    // --- 1. Logic Modal ---
+    function toggleModal(show) {
+        const modal = document.getElementById('addModal');
+        const content = document.getElementById('modalContent');
+        
+        if (show) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        } else {
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+    }
+
+    // --- 2. Logic Update Harga (Debounce AJAX) ---
+    let debounceTimer;
+
+    function debounceUpdatePrice(id, newPrice) {
+        const indicator = document.getElementById('saving-indicator');
+        indicator.classList.remove('hidden');
+        indicator.classList.add('flex');
+
+        clearTimeout(debounceTimer);
+
+        debounceTimer = setTimeout(() => {
+            sendUpdateToServer(id, newPrice);
+        }, 1000); 
+    }
+
+    function sendUpdateToServer(id, price) {
+        if(price % 1000 !== 0) {
+            alert("Harga harus kelipatan 1000!");
+            document.getElementById('saving-indicator').classList.add('hidden');
+            return;
+        }
+
+        // URL FETCH DIPERBAIKI: /admin/service/...
+        fetch(`/admin/service/${id}/update`, {
+            method: 'POST', // Gunakan POST karena di route kita pakai POST (atau sesuaikan dengan Route::post)
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ price: price })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                const indicator = document.getElementById('saving-indicator');
+                indicator.classList.remove('flex');
+                indicator.classList.add('hidden');
+                console.log('Harga tersimpan');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal menyimpan harga. Cek koneksi internet.');
+        });
+    }
+
+    const flash = document.getElementById('flash-message');
+    if(flash) {
+        setTimeout(() => {
+            flash.classList.add('opacity-0');
+            setTimeout(() => flash.remove(), 500);
+        }, 3000);
+    }
+</script>        </div>
+
+        
+        <div class="mb-8 scroll-mt-20" id="finance">
+            <div class="space-y-6 animate-fade-in relative">
+    
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Laporan Keuangan</h2>
+        
+                <form action="http://localhost/laundryfresh/public/admin#finance" method="GET" class="flex gap-2 bg-white dark:bg-slate-800 p-1.5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <!-- Dropdown Bulan -->
+            <select name="month" onchange="this.form.submit()" class="bg-transparent text-sm font-bold text-slate-700 dark:text-slate-200 outline-none cursor-pointer px-2 py-1">
+                                    <option value="12" selected>
+                        December
+                    </option>
+                                    <option value="11" >
+                        November
+                    </option>
+                                    <option value="10" >
+                        October
+                    </option>
+                                    <option value="9" >
+                        September
+                    </option>
+                            </select>
+            <!-- Dropdown Tahun -->
+            <select name="year" onchange="this.form.submit()" class="bg-transparent text-sm font-bold text-slate-700 dark:text-slate-200 outline-none cursor-pointer border-l border-slate-300 dark:border-slate-600 pl-3 px-2 py-1">
+                                    <option value="2025" selected>2025</option>
+                            </select>
+        </form>
+            </div>
+
+    <!-- Summary Stats -->
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-[30px] shadow-lg border border-slate-100 dark:border-slate-700">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Total Transaksi -->
+            <div class="text-center">
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Total Transaksi</p>
+                <p class="text-3xl font-bold text-slate-800 dark:text-white">2</p>
+            </div>
+            <!-- Total Pemasukan -->
+            <div class="text-center">
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Total Pemasukan</p>
+                <p class="text-3xl font-bold text-green-600 dark:text-green-400">
+                    Rp 477.100
+                </p>
+            </div>
+            <!-- Periode -->
+            <div class="text-center">
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Periode</p>
+                <p class="text-3xl font-bold text-slate-800 dark:text-white">
+                    December 2025
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction List -->
+    <div class="bg-white dark:bg-slate-800 rounded-[30px] shadow-lg overflow-hidden border border-slate-100 dark:border-slate-700">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+            <h3 class="font-bold text-slate-700 dark:text-slate-200">Daftar Transaksi</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Periode: <span class="font-semibold">December 2025</span>
+            </p>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                <thead class="bg-blue-50 dark:bg-slate-700 border-b border-blue-100 dark:border-slate-600 text-slate-700 dark:text-slate-200">
+                    <tr>
+                        <th class="p-4">Tanggal</th>
+                        <th class="p-4">Nama Pelanggan</th>
+                        <th class="p-4">Layanan</th>
+                        <th class="p-4">Status</th>
+                        <th class="p-4 text-right">Harga</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50 dark:divide-slate-700">
+                                                                    <tr class="hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
+                            <td class="p-4">
+                                <div class="flex flex-col">
+                                    <p class="font-semibold text-slate-700 dark:text-white">06 Dec 2025</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">11:01</p>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <p class="font-semibold text-slate-800 dark:text-white">Rashad Breitenberg</p>
+                            </td>
+                            <td class="p-4 text-slate-600 dark:text-slate-300">
+                                Cuci + Setrika
+                            </td>
+                            <td class="p-4">
+                                                                <span class="px-3 py-1 rounded-full text-xs font-bold border bg-yellow-100 text-yellow-700 border-yellow-200">
+                                    Disetrika
+                                </span>
+                            </td>
+                            <td class="p-4 text-right font-bold text-green-600 dark:text-green-400">
+                                Rp 143.283
+                            </td>
+                        </tr>
+                                                <tr class="hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
+                            <td class="p-4">
+                                <div class="flex flex-col">
+                                    <p class="font-semibold text-slate-700 dark:text-white">04 Dec 2025</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">11:01</p>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <p class="font-semibold text-slate-800 dark:text-white">Maximo Brakus</p>
+                            </td>
+                            <td class="p-4 text-slate-600 dark:text-slate-300">
+                                Cuci Express
+                            </td>
+                            <td class="p-4">
+                                                                <span class="px-3 py-1 rounded-full text-xs font-bold border bg-green-100 text-green-700 border-green-200">
+                                    Selesai
+                                </span>
+                            </td>
+                            <td class="p-4 text-right font-bold text-green-600 dark:text-green-400">
+                                Rp 333.817
+                            </td>
+                        </tr>
+                                                            </tbody>
+            </table>
+        </div>
+
+                <div class="p-4 bg-slate-50 dark:bg-slate-700/30 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+            <p class="text-xs text-slate-600 dark:text-slate-400">
+                Total: <span class="font-bold">2 transaksi</span>
+            </p>
+            <p class="text-xs text-slate-600 dark:text-slate-400">
+                Total Pemasukan: <span class="font-bold text-green-600 dark:text-green-400">
+                    Rp 477.100
+                </span>
+            </p>
+        </div>
+            </div>
+</div>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+    body.glass-mode .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #475569; }
+</style>        </div>
+        
+    </div>
+</div>
+    </main>
+
+</body>
+</html>
