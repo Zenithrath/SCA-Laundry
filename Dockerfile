@@ -31,27 +31,27 @@ RUN apt-get install -y nodejs
 # Set folder kerja
 WORKDIR /var/www/html
 
-# --- PERUBAHAN PENTING DISINI ---
-
 # 1. Copy dulu SEMUA file project dari laptop ke server
 COPY . .
 
-# 2. Hapus folder vendor jika tidak sengaja ke-copy dari laptop (Pembersihan)
+# 2. Hapus folder vendor jika tidak sengaja ke-copy dari laptop
 RUN rm -rf vendor composer.lock
 
-# 3. Baru jalankan install composer (agar fresh dan sesuai server)
+# 3. Baru jalankan install composer
 RUN composer install --no-dev --optimize-autoloader
 
-# 4. Generate key jika belum ada (opsional, untuk safety build)
-RUN php artisan key:generate --force
+# --- BAGIAN YANG DIHAPUS: key:generate ---
+# Kita hapus perintah key:generate karena key sudah ada di Railway Variables.
 
-# 5. Jalankan artisan storage:link (Sekarang aman karena vendor sudah ada)
+# 4. Buat file .env kosong sementara (PENTING AGAR TIDAK ERROR LAINNYA)
+# Ini trik supaya artisan tidak komplain file .env hilang
+RUN touch .env
+
+# 5. Jalankan artisan storage:link
 RUN php artisan storage:link
 
 # 6. Jalankan build frontend
 RUN npm install && npm run build
-
-# --------------------------------
 
 # Atur permission folder storage
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
