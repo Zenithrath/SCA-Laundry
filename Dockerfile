@@ -1,7 +1,7 @@
 # Gunakan image PHP resmi dengan Apache
 FROM php:8.2-apache
 
-# Install dependency sistem
+# 1. Install dependency sistem
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -12,58 +12,55 @@ RUN apt-get update && apt-get install -y \
     curl \
     libzip-dev
 
-# Bersihkan cache apt
+# 2. Bersihkan cache apt
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# --- OBAT ANTI ERROR MPM (PENTING) ---
-# Kita paksa matikan mpm_event dan mpm_worker, lalu aktifkan mpm_prefork
-# Perintah '|| true' agar tidak error jika modul memang belum aktif
-RUN a2dismod mpm_event || true
-RUN a2dismod mpm_worker || true
-RUN a2enmod mpm_prefork
-
-# Install ekstensi PHP
+# 3. Install ekstensi PHP
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Aktifkan mod_rewrite Apache
-RUN a2enmod rewrite
+# --- BAGIAN HAPUS PAKSA ERROR MPM (SOLUSI BARU) ---
+# Kita hapus manual file konfigurasi mpm_event dan mpm_worker agar tidak bisa hidup lagi
+RUN rm -f /etc/apache2/mods-enabled/mpm_event.load
+RUN rm -f /etc/apache2/mods-enabled/mpm_event.conf
+RUN rm -f /etc/apache2/mods-enabled/mpm_worker.load
+RUN rm -f /etc/apache2/mods-enabled/mpm_worker.conf
 
-# Install Composer
+# Paksa aktifkan mpm_prefork (satu-satunya yang boleh hidup)
+RUN a2enmod mpm_prefork rewrite
+# --------------------------------------------------
+
+# 4. Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Install NodeJS dan NPM
+# 5. Install NodeJS dan NPM
 RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
 RUN apt-get install -y nodejs
 
 # Set folder kerja
 WORKDIR /var/www/html
 
-# 1. Copy dulu SEMUA file project dari laptop ke server
+# 6. Copy semua file
 COPY . .
 
-# 2. Hapus folder vendor jika tidak sengaja ke-copy dari laptop
+# 7. Bersihkan vendor lama & Install Composer
 RUN rm -rf vendor composer.lock
-
-# 3. Baru jalankan install composer
 RUN composer install --no-dev --optimize-autoloader
 
-# 4. Buat file .env kosong sementara (agar artisan tidak error)
+# 8. Buat .env dummy & Storage Link
 RUN touch .env
-
-# 5. Jalankan artisan storage:link
 RUN php artisan storage:link
 
-# 6. Jalankan build frontend
+# 9. Build Frontend
 RUN npm install && npm run build
 
-# Atur permission folder storage
+# 10. Permission Folder
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Atur Document Root
+# 11. Setting Document Root ke Public
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# Expose port
+# 12. Expose Port 80
 EXPOSE 80
