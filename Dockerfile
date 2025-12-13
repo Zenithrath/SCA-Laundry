@@ -1,7 +1,7 @@
 # Gunakan image PHP resmi dengan Apache
 FROM php:8.2-apache
 
-# Install dependency sistem yang diperlukan Laravel
+# Install dependency sistem
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -15,48 +15,52 @@ RUN apt-get update && apt-get install -y \
 # Bersihkan cache apt
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install ekstensi PHP yang wajib
+# Install ekstensi PHP
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Aktifkan mod_rewrite Apache (biar route Laravel jalan)
+# Aktifkan mod_rewrite Apache
 RUN a2enmod rewrite
 
-# Install Composer dari image resmi
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Install NodeJS dan NPM (untuk build aset frontend)
+# Install NodeJS dan NPM
 RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
 RUN apt-get install -y nodejs
 
 # Set folder kerja
 WORKDIR /var/www/html
 
-# Copy file composer dulu (biar cache optimal)
-COPY composer.json composer.lock ./
+# --- PERUBAHAN PENTING DISINI ---
 
-# Install dependensi PHP (tanpa dev tools biar ringan)
-RUN composer install --no-dev --no-scripts --no-autoloader
-
-# Copy seluruh file project ke dalam container
+# 1. Copy dulu SEMUA file project dari laptop ke server
 COPY . .
 
-# Buat folder storage link secara manual di dalam container (BUKAN copy dari laptop)
+# 2. Hapus folder vendor jika tidak sengaja ke-copy dari laptop (Pembersihan)
+RUN rm -rf vendor composer.lock
+
+# 3. Baru jalankan install composer (agar fresh dan sesuai server)
+RUN composer install --no-dev --optimize-autoloader
+
+# 4. Generate key jika belum ada (opsional, untuk safety build)
+RUN php artisan key:generate --force
+
+# 5. Jalankan artisan storage:link (Sekarang aman karena vendor sudah ada)
 RUN php artisan storage:link
 
-# Jalankan build frontend (Vite/Blade)
+# 6. Jalankan build frontend
 RUN npm install && npm run build
 
-# Finalisasi install composer
-RUN composer dump-autoload --optimize
+# --------------------------------
 
-# Atur permission folder storage (supaya bisa upload gambar)
+# Atur permission folder storage
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Atur Document Root ke folder public
+# Atur Document Root
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# Expose port (Railway akan override ini, tapi standar Docker butuh ini)
+# Expose port
 EXPOSE 80
