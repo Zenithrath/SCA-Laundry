@@ -40,23 +40,19 @@ RUN npm install && npm run build
 # 8. Setup Laravel
 RUN touch .env
 RUN php artisan storage:link
-RUN chown -R www-data:www-data storage bootstrap/cache
-RUN chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 9. Atur Document Root (INI WAJIB UNTUK LOGIN)
+# 9. Atur Document Root
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# 10. IZINKAN .htaccess (INI YANG HANDLE LOGIN ROUTING)
-RUN echo '<Directory /var/www/html/public>\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>' >> /etc/apache2/apache2.conf
-
-# 11. Expose Port
+# 10. Expose Port 80
 EXPOSE 80
 
-# ❌ CMD HACK MPM DIHAPUS TOTAL
-# ✅ Pakai default apache2-foreground
-CMD ["apache2-foreground"]
+# --- SOLUSI PAMUNGKAS ---
+# Kita ganti perintah start default.
+# Script ini akan menghapus paksa config yang bentrok TEPAT SEBELUM website nyala.
+# Jadi linux tidak punya waktu untuk mengembalikannya.
+CMD ["/bin/bash", "-c", "rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf /etc/apache2/mods-enabled/mpm_worker.load /etc/apache2/mods-enabled/mpm_worker.conf && apache2-foreground"]
