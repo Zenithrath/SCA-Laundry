@@ -1,201 +1,346 @@
 ﻿<!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - SCA Laundry</title>
-    <script type="module" src="http://[::1]:5173/@vite/client"></script><link rel="stylesheet" href="http://[::1]:5173/resources/css/app.css" /><script type="module" src="http://[::1]:5173/resources/js/app.js"></script>    <style>
-        /* --- GLOBAL THEME VARIABLES --- */
-        :root {
-            --bg-body: #f8fafc; /* slate-50 */
-            --bg-card: #ffffff;
-            --text-main: #1e293b; /* slate-800 */
-            --text-sub: #64748b; /* slate-500 */
-            --border-color: #e2e8f0; /* slate-200 */
-            --input-bg: #f1f5f9; /* slate-100 */
-        }
-
-        /* GLASS MODE OVERRIDES */
-        body.glass-mode {
-            --bg-body: #0f172a; /* slate-900 */
-            --bg-card: rgba(255, 255, 255, 0.1);
-            --text-main: #ffffff;
-            --text-sub: #cbd5e1; /* slate-300 */
-            --border-color: rgba(255, 255, 255, 0.2);
-            --input-bg: rgba(255, 255, 255, 0.05);
-        }
-
-        body {
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            transition: background-color 0.5s ease, color 0.5s ease;
-        }
-
-        /* Card Styles */
-        .auth-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(12px);
-        }
-
-        /* Input Styles */
-        .auth-input {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-        }
-        .auth-input::placeholder { color: var(--text-sub); opacity: 0.7; }
-        
-        /* Animasi Transisi Form */
-        .form-section { transition: all 0.5s ease-in-out; position: absolute; width: 100%; top: 0; left: 0; }
-        .hide-left { transform: translateX(-110%); opacity: 0; pointer-events: none; }
-        .hide-right { transform: translateX(110%); opacity: 0; pointer-events: none; }
-        .show { transform: translateX(0); opacity: 1; position: relative; }
-    </style>
-    
-    <!-- Script Tema (Copy dari app.blade.php) -->
-    <script>
-        if (localStorage.getItem('theme') === 'glass') { document.documentElement.classList.add('glass-mode'); document.body?.classList.add('glass-mode'); }
-    </script>
-</head>
-<body id="mainBody" class="min-h-screen flex items-center justify-center overflow-hidden relative">
-
-    <!-- Background Blobs (Hanya muncul di Glass Mode agar estetik) -->
-    <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-0 transition-opacity duration-500" id="bgBlobs">
-        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-cyan-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob"></div>
-    </div>
-
-    <!-- Main Card -->
-    <div class="relative w-full max-w-md p-6">
-        <div class="auth-card shadow-2xl rounded-[40px] p-8 md:p-10 transition-colors duration-500">
-            
-            <div class="text-center mb-8">
-                <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 text-white shadow-lg shadow-blue-500/30">
-                    🧺
-                </div>
-                <h2 id="pageTitle" class="text-2xl font-bold">Selamat Datang</h2>
-                <p class="text-xs mt-2" style="color: var(--text-sub)">SCA Laundry Application</p>
-            </div>
-
-            <!-- Error Message Display -->
-            
-            <!-- Container Form -->
-            <div class="relative overflow-hidden min-h-[300px]">
-                
-                <!-- === FORM LOGIN === -->
-                <div id="loginForm" class="form-section show">
-                    <form method="POST" action="http://localhost/laundryfresh/public/login" class="space-y-4">
-                        <input type="hidden" name="_token" value="CmucLYmgsKV2JV8fHFJuoaAMG6G714FeZshqqiCC" autocomplete="off">                        <div>
-                            <label class="block text-xs font-bold mb-1" style="color: var(--text-sub)">Email</label>
-                            <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl outline-none transition-all text-sm auth-input focus:ring-2 focus:ring-blue-500" placeholder="email@contoh.com">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold mb-1" style="color: var(--text-sub)">Password</label>
-                            <input type="password" name="password" required class="w-full px-4 py-3 rounded-xl outline-none transition-all text-sm auth-input focus:ring-2 focus:ring-blue-500" placeholder="••••••••">
-                        </div>
-                        <button type="submit" class="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-transform active:scale-95 mt-4">
-                            Masuk
-                        </button>
-                    </form>
-                </div>
-
-                <!-- === FORM REGISTER === -->
-                <div id="registerForm" class="form-section hide-right">
-                    <form method="POST" action="http://localhost/laundryfresh/public/register" class="space-y-4">
-                        <input type="hidden" name="_token" value="CmucLYmgsKV2JV8fHFJuoaAMG6G714FeZshqqiCC" autocomplete="off">                        <div>
-                            <label class="block text-xs font-bold mb-1" style="color: var(--text-sub)">Nama Lengkap</label>
-                            <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl outline-none transition-all text-sm auth-input focus:ring-2 focus:ring-blue-500" placeholder="Nama Kamu">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold mb-1" style="color: var(--text-sub)">Email</label>
-                            <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl outline-none transition-all text-sm auth-input focus:ring-2 focus:ring-blue-500" placeholder="email@contoh.com">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold mb-1" style="color: var(--text-sub)">Password</label>
-                            <input type="password" name="password" required class="w-full px-4 py-3 rounded-xl outline-none transition-all text-sm auth-input focus:ring-2 focus:ring-blue-500" placeholder="••••••••">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold mb-1" style="color: var(--text-sub)">Konfirmasi Password</label>
-                            <input type="password" name="password_confirmation" required class="w-full px-4 py-3 rounded-xl outline-none transition-all text-sm auth-input focus:ring-2 focus:ring-blue-500" placeholder="••••••••">
-                        </div>
-                        <button type="submit" class="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-transform active:scale-95 mt-4">
-                            Daftar Sekarang
-                        </button>
-                    </form>
-                </div>
-
-            </div>
-
-            <!-- Toggle Button -->
-            <div class="mt-6 text-center pt-6 border-t" style="border-color: var(--border-color)">
-                <p class="text-sm" style="color: var(--text-sub)">
-                    <span id="questionText">Belum punya akun?</span>
-                    <button type="button" onclick="toggleAuth()" class="text-blue-600 font-bold hover:underline ml-1">
-                        <span id="btnText">Daftar di sini</span>
-                    </button>
-                </p>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Toggle Theme Button (Pojok Kanan Bawah) -->
-    <div class="fixed bottom-6 right-6 z-50">
-        <button onclick="toggleTheme()" class="bg-white/10 backdrop-blur-md border border-white/20 text-blue-500 px-4 py-2 rounded-full shadow text-xs font-bold hover:bg-white/20 transition-all">
-            🌓 Ganti Tema
-        </button>
-    </div>
-
-    <script>
-        // Init Theme
-        const body = document.getElementById('mainBody');
-        const bgBlobs = document.getElementById('bgBlobs');
-
-        function checkTheme() {
-            if (localStorage.getItem('theme') === 'glass') {
-                body.classList.add('glass-mode');
-                bgBlobs.classList.remove('opacity-0');
-            } else {
-                body.classList.remove('glass-mode');
-                bgBlobs.classList.add('opacity-0');
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Login - SCA Laundry</title>
+        <script type="module" src="http://[::1]:5173/@vite/client"></script>
+        <link rel="stylesheet" href="http://[::1]:5173/resources/css/app.css" />
+        <script
+            type="module"
+            src="http://[::1]:5173/resources/js/app.js"
+        ></script>
+        <style>
+            /* --- GLOBAL THEME VARIABLES --- */
+            :root {
+                --bg-body: #f8fafc; /* slate-50 */
+                --bg-card: #ffffff;
+                --text-main: #1e293b; /* slate-800 */
+                --text-sub: #64748b; /* slate-500 */
+                --border-color: #e2e8f0; /* slate-200 */
+                --input-bg: #f1f5f9; /* slate-100 */
             }
-        }
-        checkTheme();
 
-        function toggleTheme() {
-            if (body.classList.contains('glass-mode')) {
-                localStorage.setItem('theme', 'normal');
-            } else {
-                localStorage.setItem('theme', 'glass');
+            /* GLASS MODE OVERRIDES */
+            body.glass-mode {
+                --bg-body: #0f172a; /* slate-900 */
+                --bg-card: rgba(255, 255, 255, 0.1);
+                --text-main: #ffffff;
+                --text-sub: #cbd5e1; /* slate-300 */
+                --border-color: rgba(255, 255, 255, 0.2);
+                --input-bg: rgba(255, 255, 255, 0.05);
+            }
+
+            body {
+                background-color: var(--bg-body);
+                color: var(--text-main);
+                transition: background-color 0.5s ease, color 0.5s ease;
+            }
+
+            /* Card Styles */
+            .auth-card {
+                background-color: var(--bg-card);
+                border: 1px solid var(--border-color);
+                backdrop-filter: blur(12px);
+            }
+
+            /* Input Styles */
+            .auth-input {
+                background-color: var(--input-bg);
+                border: 1px solid var(--border-color);
+                color: var(--text-main);
+            }
+            .auth-input::placeholder {
+                color: var(--text-sub);
+                opacity: 0.7;
+            }
+
+            /* Animasi Transisi Form */
+            .form-section {
+                transition: all 0.5s ease-in-out;
+                position: absolute;
+                width: 100%;
+                top: 0;
+                left: 0;
+            }
+            .hide-left {
+                transform: translateX(-110%);
+                opacity: 0;
+                pointer-events: none;
+            }
+            .hide-right {
+                transform: translateX(110%);
+                opacity: 0;
+                pointer-events: none;
+            }
+            .show {
+                transform: translateX(0);
+                opacity: 1;
+                position: relative;
+            }
+        </style>
+
+        <!-- Script Tema (Copy dari app.blade.php) -->
+        <script>
+            if (localStorage.getItem("theme") === "glass") {
+                document.documentElement.classList.add("glass-mode");
+                document.body?.classList.add("glass-mode");
+            }
+        </script>
+    </head>
+    <body
+        id="mainBody"
+        class="min-h-screen flex items-center justify-center overflow-hidden relative"
+    >
+        <div></div>
+
+        <!-- Background Blobs (Hanya muncul di Glass Mode agar estetik) -->
+        <div
+            class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-0 transition-opacity duration-500"
+            id="bgBlobs"
+        >
+            <div
+                class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob"
+            ></div>
+            <div
+                class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-cyan-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob"
+            ></div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="relative w-full max-w-md p-6">
+            <div
+                class="auth-card shadow-2xl rounded-[40px] p-8 md:p-10 transition-colors duration-500"
+            >
+                <div class="text-center mb-8">
+                    <div
+                        class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 text-white shadow-lg shadow-blue-500/30"
+                    >
+                        🧺
+                    </div>
+                    <h2 id="pageTitle" class="text-2xl font-bold">
+                        Selamat Datang
+                    </h2>
+                    <p class="text-xs mt-2" style="color: var(--text-sub)">
+                        SCA Laundry Application
+                    </p>
+                </div>
+
+                <!-- Error Message Display -->
+
+                <!-- Container Form -->
+                <div class="relative overflow-hidden min-h-[300px]">
+                    <!-- === FORM LOGIN === -->
+                    <div id="loginForm" class="form-section show">
+                        <form
+                            method="POST"
+                            action="http://localhost/laundryfresh/public/login"
+                            class="space-y-4"
+                        >
+                            <input
+                                type="hidden"
+                                name="_token"
+                                value="CmucLYmgsKV2JV8fHFJuoaAMG6G714FeZshqqiCC"
+                                autocomplete="off"
+                            />
+                            <div>
+                                <label
+                                    class="block text-xs font-bold mb-1"
+                                    style="color: var(--text-sub)"
+                                    >Email</label
+                                >
+                                <input
+                                    type="email"
+                                    name="email"
+                                    required
+                                    class="w-full px-4 py-3 rounded-xl outline-none transition-all text-sm auth-input focus:ring-2 focus:ring-blue-500"
+                                    placeholder="email@contoh.com"
+                                />
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold mb-1"
+                                    style="color: var(--text-sub)"
+                                    >Password</label
+                                >
+                                <input
+                                    type="password"
+                                    name="password"
+                                    required
+                                    class="w-full px-4 py-3 rounded-xl outline-none transition-all text-sm auth-input focus:ring-2 focus:ring-blue-500"
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                class="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-transform active:scale-95 mt-4"
+                            >
+                                Masuk
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- === FORM REGISTER === -->
+                    <div id="registerForm" class="form-section hide-right">
+                        <form
+                            method="POST"
+                            action="http://localhost/laundryfresh/public/register"
+                            class="space-y-4"
+                        >
+                            <input
+                                type="hidden"
+                                name="_token"
+                                value="CmucLYmgsKV2JV8fHFJuoaAMG6G714FeZshqqiCC"
+                                autocomplete="off"
+                            />
+                            <div>
+                                <label
+                                    class="block text-xs font-bold mb-1"
+                                    style="color: var(--text-sub)"
+                                    >Nama Lengkap</label
+                                >
+                                <input
+                                    type="text"
+                                    name="name"
+                                    required
+                                    class="w-full px-4 py-3 rounded-xl outline-none transition-all text-sm auth-input focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Nama Kamu"
+                                />
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold mb-1"
+                                    style="color: var(--text-sub)"
+                                    >Email</label
+                                >
+                                <input
+                                    type="email"
+                                    name="email"
+                                    required
+                                    class="w-full px-4 py-3 rounded-xl outline-none transition-all text-sm auth-input focus:ring-2 focus:ring-blue-500"
+                                    placeholder="email@contoh.com"
+                                />
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold mb-1"
+                                    style="color: var(--text-sub)"
+                                    >Password</label
+                                >
+                                <input
+                                    type="password"
+                                    name="password"
+                                    required
+                                    class="w-full px-4 py-3 rounded-xl outline-none transition-all text-sm auth-input focus:ring-2 focus:ring-blue-500"
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold mb-1"
+                                    style="color: var(--text-sub)"
+                                    >Konfirmasi Password</label
+                                >
+                                <input
+                                    type="password"
+                                    name="password_confirmation"
+                                    required
+                                    class="w-full px-4 py-3 rounded-xl outline-none transition-all text-sm auth-input focus:ring-2 focus:ring-blue-500"
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                class="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-transform active:scale-95 mt-4"
+                            >
+                                Daftar Sekarang
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Toggle Button -->
+                <div
+                    class="mt-6 text-center pt-6 border-t"
+                    style="border-color: var(--border-color)"
+                >
+                    <p class="text-sm" style="color: var(--text-sub)">
+                        <span id="questionText">Belum punya akun?</span>
+                        <button
+                            type="button"
+                            onclick="toggleAuth()"
+                            class="text-blue-600 font-bold hover:underline ml-1"
+                        >
+                            <span id="btnText">Daftar di sini</span>
+                        </button>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toggle Theme Button (Pojok Kanan Bawah) -->
+        <div class="fixed bottom-6 right-6 z-50">
+            <button
+                onclick="toggleTheme()"
+                class="bg-white/10 backdrop-blur-md border border-white/20 text-blue-500 px-4 py-2 rounded-full shadow text-xs font-bold hover:bg-white/20 transition-all"
+            >
+                🌓 Ganti Tema
+            </button>
+        </div>
+
+        <script>
+            // Init Theme
+            const body = document.getElementById("mainBody");
+            const bgBlobs = document.getElementById("bgBlobs");
+
+            function checkTheme() {
+                if (localStorage.getItem("theme") === "glass") {
+                    body.classList.add("glass-mode");
+                    bgBlobs.classList.remove("opacity-0");
+                } else {
+                    body.classList.remove("glass-mode");
+                    bgBlobs.classList.add("opacity-0");
+                }
             }
             checkTheme();
-        }
 
-        // Logic Toggle Login/Register
-        let isLogin = true;
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const pageTitle = document.getElementById('pageTitle');
-        const questionText = document.getElementById('questionText');
-        const btnText = document.getElementById('btnText');
-
-        function toggleAuth() {
-            isLogin = !isLogin;
-            if (isLogin) {
-                loginForm.classList.remove('hide-left'); loginForm.classList.add('show');
-                registerForm.classList.remove('show'); registerForm.classList.add('hide-right');
-                pageTitle.innerText = "Selamat Datang";
-                questionText.innerText = "Belum punya akun?";
-                btnText.innerText = "Daftar di sini";
-            } else {
-                loginForm.classList.remove('show'); loginForm.classList.add('hide-left');
-                registerForm.classList.remove('hide-right'); registerForm.classList.add('show');
-                pageTitle.innerText = "Buat Akun Baru";
-                questionText.innerText = "Sudah punya akun?";
-                btnText.innerText = "Login di sini";
+            function toggleTheme() {
+                if (body.classList.contains("glass-mode")) {
+                    localStorage.setItem("theme", "normal");
+                } else {
+                    localStorage.setItem("theme", "glass");
+                }
+                checkTheme();
             }
-        }
-    </script>
-</body>
+
+            // Logic Toggle Login/Register
+            let isLogin = true;
+            const loginForm = document.getElementById("loginForm");
+            const registerForm = document.getElementById("registerForm");
+            const pageTitle = document.getElementById("pageTitle");
+            const questionText = document.getElementById("questionText");
+            const btnText = document.getElementById("btnText");
+
+            function toggleAuth() {
+                isLogin = !isLogin;
+                if (isLogin) {
+                    loginForm.classList.remove("hide-left");
+                    loginForm.classList.add("show");
+                    registerForm.classList.remove("show");
+                    registerForm.classList.add("hide-right");
+                    pageTitle.innerText = "Selamat Datang";
+                    questionText.innerText = "Belum punya akun?";
+                    btnText.innerText = "Daftar di sini";
+                } else {
+                    loginForm.classList.remove("show");
+                    loginForm.classList.add("hide-left");
+                    registerForm.classList.remove("hide-right");
+                    registerForm.classList.add("show");
+                    pageTitle.innerText = "Buat Akun Baru";
+                    questionText.innerText = "Sudah punya akun?";
+                    btnText.innerText = "Login di sini";
+                }
+            }
+        </script>
+    </body>
 </html>
