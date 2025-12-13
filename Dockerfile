@@ -15,6 +15,13 @@ RUN apt-get update && apt-get install -y \
 # Bersihkan cache apt
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# --- OBAT ANTI ERROR MPM (PENTING) ---
+# Kita paksa matikan mpm_event dan mpm_worker, lalu aktifkan mpm_prefork
+# Perintah '|| true' agar tidak error jika modul memang belum aktif
+RUN a2dismod mpm_event || true
+RUN a2dismod mpm_worker || true
+RUN a2enmod mpm_prefork
+
 # Install ekstensi PHP
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
@@ -40,11 +47,7 @@ RUN rm -rf vendor composer.lock
 # 3. Baru jalankan install composer
 RUN composer install --no-dev --optimize-autoloader
 
-# --- BAGIAN YANG DIHAPUS: key:generate ---
-# Kita hapus perintah key:generate karena key sudah ada di Railway Variables.
-
-# 4. Buat file .env kosong sementara (PENTING AGAR TIDAK ERROR LAINNYA)
-# Ini trik supaya artisan tidak komplain file .env hilang
+# 4. Buat file .env kosong sementara (agar artisan tidak error)
 RUN touch .env
 
 # 5. Jalankan artisan storage:link
