@@ -20,6 +20,7 @@
         <!-- Form -->
         <form id="bookingForm" onsubmit="submitOrder(event)" class="flex-1 flex flex-col">
             @csrf
+            <!-- Hidden Inputs -->
             <input type="hidden" name="service_id" id="inputServiceId">
             <input type="hidden" name="service_price" id="inputServicePrice" value="0">
             <input type="hidden" id="userPoints" value="{{ auth()->user() ? auth()->user()->points : 0 }}">
@@ -55,12 +56,14 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-xs font-bold mb-2 ml-1">Alamat Penjemputan</label>
-                        <textarea name="pickup_address" rows="4" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700"></textarea>
+                        <!-- SAYA TAMBAHKAN ID DISINI -->
+                        <textarea id="pickupAddress" name="pickup_address" rows="4" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700"></textarea>
                     </div>
                     <div class="space-y-4">
                         <div>
                             <label class="block text-xs font-bold mb-2 ml-1">Tanggal</label>
-                            <input type="date" name="pickup_date" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700">
+                            <!-- SAYA TAMBAHKAN ID DISINI -->
+                            <input type="date" id="pickupDate" name="pickup_date" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700">
                         </div>
                         <div>
                             <label class="block text-xs font-bold mb-2 ml-1">Jam</label>
@@ -84,11 +87,13 @@
                 <div class="space-y-6 max-w-xl mx-auto w-full">
                     <div>
                         <label class="block text-xs font-bold mb-2 ml-1">Nama Lengkap</label>
-                        <input type="text" name="name" value="{{ auth()->user()->name ?? '' }}" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700">
+                        <!-- SAYA TAMBAHKAN ID DISINI -->
+                        <input type="text" id="inputName" name="name" value="{{ auth()->user()->name ?? '' }}" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700">
                     </div>
                     <div>
                         <label class="block text-xs font-bold mb-2 ml-1">Nomor HP / WA</label>
-                        <input type="tel" name="phone" value="{{ auth()->user()->phone ?? '' }}" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700">
+                        <!-- SAYA TAMBAHKAN ID DISINI -->
+                        <input type="tel" id="inputPhone" name="phone" value="{{ auth()->user()->phone ?? '' }}" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700">
                     </div>
                     <div>
                         <label class="block text-xs font-bold mb-2 ml-1">Email</label>
@@ -144,15 +149,23 @@
 
     // Update tampilan step & tombol
     function updateNavigationUI() {
+        // Sembunyikan semua step
         document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+        // Tampilkan step aktif
         document.getElementById(`step${currentStep}`).classList.remove('hidden');
 
+        // Update indikator stepper
         document.querySelectorAll('.step-btn').forEach((btn, i) => {
             btn.className =
                 i + 1 === currentStep
                     ? "step-btn flex-1 py-2 rounded-full text-xs font-bold bg-cyan-600 text-white shadow-md"
                     : "step-btn flex-1 py-2 rounded-full text-xs font-bold text-slate-400";
         });
+
+        // Atur tombol navigasi
+        const btnBack = document.getElementById('btnBack');
+        const btnNext = document.getElementById('btnNext');
+        const btnSubmit = document.getElementById('btnSubmit');
 
         btnBack.classList.toggle('invisible', currentStep === 1);
         btnNext.classList.toggle('hidden', currentStep === 4);
@@ -163,17 +176,31 @@
 
     // Perpindahan step + validasi
     function changeStep(dir) {
+        // Validasi Step 1
         if (currentStep === 1 && dir === 1) {
-            if (!inputServiceId.value) return alert('Silakan pilih layanan.');
-            if (!inputWeight.value) return alert('Isi estimasi berat.');
+            const serviceId = document.getElementById('inputServiceId').value;
+            const weight = document.getElementById('inputWeight').value;
+
+            if (!serviceId) return alert('Silakan pilih layanan terlebih dahulu.');
+            if (!weight) return alert('Isi estimasi berat laundry.');
         }
+
+        // Validasi Step 2 (PERBAIKAN DISINI)
         if (currentStep === 2 && dir === 1) {
-            if (!pickup_address.value) return alert('Lengkapi alamat.');
-            if (!pickup_date.value) return alert('Pilih tanggal.');
+            const address = document.getElementById('pickupAddress').value; // Mengambil value via ID
+            const date = document.getElementById('pickupDate').value;       // Mengambil value via ID
+
+            if (!address) return alert('Mohon lengkapi alamat penjemputan.');
+            if (!date) return alert('Mohon pilih tanggal penjemputan.');
         }
+
+        // Validasi Step 3
         if (currentStep === 3 && dir === 1) {
-            if (!document.querySelector('[name="name"]').value) return alert('Nama wajib diisi.');
-            if (!document.querySelector('[name="phone"]').value) return alert('Nomor HP wajib diisi.');
+            const name = document.getElementById('inputName').value;
+            const phone = document.getElementById('inputPhone').value;
+
+            if (!name) return alert('Nama wajib diisi.');
+            if (!phone) return alert('Nomor HP wajib diisi.');
         }
 
         goToStep(currentStep + dir);
@@ -188,14 +215,16 @@
     // Pilih layanan
     function selectService(id, name, price) {
         selectedService = { id, name, price };
-        inputServiceId.value = id;
-        inputServicePrice.value = price;
+        document.getElementById('inputServiceId').value = id;
+        document.getElementById('inputServicePrice').value = price;
 
+        // Reset style semua card
         document.querySelectorAll('.service-card').forEach(el => {
             el.classList.remove('border-cyan-500', 'bg-cyan-50', 'dark:bg-cyan-900/40');
             el.classList.add('border-transparent');
         });
 
+        // Highlight card yang dipilih
         const card = document.getElementById(`service-card-${id}`);
         card.classList.remove('border-transparent');
         card.classList.add('border-cyan-500', 'bg-cyan-50', 'dark:bg-cyan-900/40');
@@ -205,41 +234,52 @@
 
     // Hitung total + diskon poin
     function calculateTotal() {
-        const weight = parseInt(inputWeight.value) || 0;
+        const weight = parseInt(document.getElementById('inputWeight').value) || 0;
         const subtotal = selectedService.price * weight;
-        let total = subtotal + 10000;
+        let total = subtotal + 10000; // Biaya antar
 
-        let points = parseInt(userPoints.value) || 0;
+        let points = parseInt(document.getElementById('userPoints').value) || 0;
+        
+        const discountRow = document.getElementById('discountRow');
+        const pointStatus = document.getElementById('pointStatus');
+        const summaryDiscount = document.getElementById('summaryDiscount');
 
         discountRow.classList.add('hidden');
         pointStatus.classList.add('hidden');
 
+        // Logika Diskon
         if (points >= 10 && weight > 0) {
-            const discount = total * 0.6;
-            total -= discount;
+            const discount = total * 0.4; // Potongan 40% (Bayar 60%) atau sebaliknya?
+            // Berdasarkan controller sebelumnya, Anda menulis: $total *= 0.40; (Artinya diskon 60%)
+            // Maka discount valuenya adalah:
+            const discountAmount = total * 0.6; // Diskon sebesar 60%
+            total = total - discountAmount;
 
             discountRow.classList.remove('hidden');
-            summaryDiscount.innerText = '-Rp ' + discount.toLocaleString('id-ID');
+            summaryDiscount.innerText = '-Rp ' + discountAmount.toLocaleString('id-ID');
 
             pointStatus.classList.remove('hidden');
             pointStatus.innerText = `Poin: ${points}. Diskon 60% diterapkan!`;
         }
 
-        summaryService.innerText = selectedService.name || '-';
-        summaryPrice.innerText = 'Rp ' + subtotal.toLocaleString('id-ID');
-        summaryGrandTotal.innerText = 'Rp ' + total.toLocaleString('id-ID');
+        document.getElementById('summaryService').innerText = selectedService.name || '-';
+        document.getElementById('summaryPrice').innerText = 'Rp ' + subtotal.toLocaleString('id-ID');
+        document.getElementById('summaryGrandTotal').innerText = 'Rp ' + total.toLocaleString('id-ID');
     }
 
     // Submit pesanan via AJAX
     function submitOrder(e) {
         e.preventDefault();
 
+        const btnSubmit = document.getElementById('btnSubmit');
         btnSubmit.innerText = 'Memproses...';
         btnSubmit.disabled = true;
 
+        const formData = new FormData(document.getElementById('bookingForm'));
+
         fetch("{{ route('order.store') }}", {
             method: "POST",
-            body: new FormData(bookingForm),
+            body: formData,
             headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
         })
         .then(async res => {
@@ -247,6 +287,7 @@
             if (res.ok) {
                 alert('✅ ' + data.message);
                 if (data.wa_url) window.open(data.wa_url, '_blank');
+                // Redirect setelah sukses
                 setTimeout(() => window.location.href = "{{ route('landing') }}", 1000);
             } else {
                 alert('❌ ' + (data.message || 'Gagal memproses.'));

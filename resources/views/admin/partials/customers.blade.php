@@ -1,3 +1,4 @@
+<!-- TABEL DATA PESANAN -->
 <div class="space-y-6 animate-fade-in relative">
     
     <!-- Header -->
@@ -80,8 +81,7 @@
     </div>
 </div>
 
-
-<!-- Modal Detail Pesanan -->
+<!-- MODAL DETAIL PESANAN -->
 <div id="customerModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-opacity opacity-0">
     <div id="customerModalContent"
         class="w-full max-w-2xl bg-white dark:bg-slate-900 text-slate-800 dark:text-white shadow-2xl rounded-[30px] p-8 relative transform scale-95 transition-transform duration-300 overflow-y-auto max-h-[90vh]">
@@ -148,11 +148,23 @@
     </div>
 </div>
 
-
+<!-- JAVASCRIPT LOGIC -->
 <script>
     (function() {
         let currentCustOrder = null;
         const custStatuses = ["Menunggu", "Dicuci", "Disetrika", "Selesai"];
+
+        // 1. Helper: Fungsi update Link WA agar bisa dipanggil berulang kali
+        function updateWALinkButton(order, status) {
+            let phone = order.phone.replace(/\D/g, '');
+            if (phone.startsWith('0')) phone = '62' + phone.substring(1);
+            
+            // Encode URI Component agar spasi terbaca di WA
+            const message = `Halo Kak ${order.name}, status pesanan saat ini: ${status}`;
+            const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+            
+            document.getElementById('cBtnWA').href = url;
+        }
 
         // Buka modal dan isi data detail pesanan
         window.openCustomerModal = function(order, serviceName) {
@@ -161,6 +173,7 @@
             const modal = document.getElementById('customerModal');
             const content = document.getElementById('customerModalContent');
 
+            // Isi Data Modal
             document.getElementById('cModalCode').innerText = '#' + (order.order_code || order.id);
             document.getElementById('cModalName').innerText = order.name;
             document.getElementById('cModalPhone').innerText = order.phone;
@@ -174,13 +187,12 @@
                 .format(order.total_price);
             document.getElementById('cModalTotal').innerText = total;
 
-            let phone = order.phone.replace(/\D/g, '');
-            if (phone.startsWith('0')) phone = '62' + phone.substring(1);
-            document.getElementById('cBtnWA').href =
-                `https://wa.me/${phone}?text=Halo%20Kak%20${order.name},%20status%20pesanan%20saat%20ini:%20${order.status}`;
+            // 2. Set Link WA awal saat modal dibuka
+            updateWALinkButton(order, order.status);
 
             renderCustStatusButtons(order.status);
 
+            // Animasi Buka Modal
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             setTimeout(() => {
@@ -229,17 +241,23 @@
             });
         }
 
-        // Update status pesanan
+        // Update status pesanan ke Server
         function updateCustStatus(newStatus) {
             if (!currentCustOrder) return;
 
+            // Update Tampilan Tombol
             renderCustStatusButtons(newStatus);
+            
+            // 3. Update Link WA secara REAL-TIME saat status diklik
+            updateWALinkButton(currentCustOrder, newStatus);
 
+            // Kirim ke Backend
             fetch(`/admin/order/${currentCustOrder.id}/status`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
+                    // Pastikan ada meta csrf-token di head layout kamu
                     "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify({ status: newStatus })
@@ -247,6 +265,7 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
+                    // Update badge di tabel belakang tanpa reload
                     const badge = document.getElementById(`badge-cust-${currentCustOrder.id}`);
                     if (badge) {
                         badge.innerText = newStatus;
@@ -259,13 +278,14 @@
                             `px-3 py-1 rounded-full text-[10px] font-bold border ${color}`;
                     }
 
+                    // Simpan status baru ke variabel lokal
                     currentCustOrder.status = newStatus;
                 }
             })
             .catch(err => alert("Gagal update status: " + err.message));
         }
 
-        // Tutup modal jika klik area gelap
+        // Tutup modal jika klik area gelap (overlay)
         const modal = document.getElementById('customerModal');
         if (modal) modal.addEventListener("click", e => {
             if (e.target === modal) window.closeCustomerModal();

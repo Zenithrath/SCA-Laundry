@@ -13,7 +13,6 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validasi input
             $request->validate([
                 'service_id' => 'required|exists:services,id',
                 'weight' => 'required|numeric|min:1',
@@ -26,7 +25,6 @@ class OrderController extends Controller
 
             $user = Auth::user();
 
-            // Hitung harga total
             $service = Service::find($request->service_id);
             $biayaLayanan = $service->price * $request->weight;
             $biayaAntar = 10000;
@@ -40,7 +38,6 @@ class OrderController extends Controller
                 $isDiscounted = true;
             }
 
-            // Buat kode pesanan 
             $orderCode = 'LDY-' . strtoupper(Str::random(6));
 
             $order = Order::create([
@@ -57,7 +54,11 @@ class OrderController extends Controller
                 'status' => 'Menunggu',
             ]);
 
-            // Generate pesan 
+            $pointsEarned = floor($total / 10000);
+            if ($pointsEarned > 0) {
+                $user->increment('points', $pointsEarned);
+            }
+
             $adminNumber = '6287783923671';
 
             $message  = "Halo Admin SCA Laundry, saya baru saja membuat pesanan.\n\n";
