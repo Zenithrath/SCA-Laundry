@@ -2,35 +2,43 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Database\Seeder; // Jangan lupa import ini
 use App\Models\User;
 use App\Models\Service;
 use Illuminate\Support\Facades\Hash;
 
-public function run(): void
+class DatabaseSeeder extends Seeder
 {
-   
-    User::create([
-        'name' => 'Super Admin',
-        'email' => 'admin@sca.com',
-        'password' => Hash::make('password'), 
-        'role' => 'admin',
-        'phone' => '081234567890'
-    ]);
+    public function run(): void
+    {
+        // 1. Akun Admin
+        User::updateOrCreate(
+            ['email' => 'admin@sca.com'], // <--- KUNCI PENCARIAN (Cek email ini dulu)
+            [
+                'name' => 'Admin',
+                'password' => Hash::make('password'), // <--- DATA YANG DIUPDATE/INSERT
+                'role' => 'admin',
+                'phone' => '081234567890'
+            ]
+        );
+
+        // 2. Akun User (Gunakan updateOrCreate juga biar aman kalau di-seed 2x)
+        User::updateOrCreate(
+            ['email' => 'user@sca.com'], 
+            [
+                'name' => 'Djibril User',
+                'password' => Hash::make('password'),
+                'role' => 'user',
+                'phone' => '08987654321'
+            ]
+        );
 
 
-    User::create([
-        'name' => 'Djibril User',
-        'email' => 'user@sca.com',
-        'password' => Hash::make('password'),
-        'role' => 'user',
-        'phone' => '08987654321'
-    ]);
-
-
-    Service::insert([
-        ['name' => 'Cuci Reguler', 'price' => 6000, 'unit' => '/kg'],
-        ['name' => 'Cuci Kering', 'price' => 4000, 'unit' => '/kg'],
-        ['name' => 'Cuci Express', 'price' => 9000, 'unit' => '/kg'],
-        ['name' => 'Setrika Saja', 'price' => 5000, 'unit' => '/kg'],
-    ]);
+        Service::insertOrIgnore([
+            ['name' => 'Cuci Reguler', 'price' => 6000, 'unit' => '/kg'],
+            ['name' => 'Cuci Kering', 'price' => 4000, 'unit' => '/kg'],
+            ['name' => 'Cuci Express', 'price' => 9000, 'unit' => '/kg'],
+            ['name' => 'Setrika Saja', 'price' => 5000, 'unit' => '/kg'],
+        ]);
+    }
 }
