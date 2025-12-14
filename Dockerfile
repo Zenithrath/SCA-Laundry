@@ -25,7 +25,6 @@ RUN a2enmod rewrite
 COPY docker/apache.conf /etc/apache2/conf-available/laravel.conf
 RUN a2enconf laravel
 
-
 # 5. Install Composer & Node
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
@@ -57,7 +56,4 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 EXPOSE 80
 
 # --- SOLUSI PAMUNGKAS ---
-# Kita ganti perintah start default.
-# Script ini akan menghapus paksa config yang bentrok TEPAT SEBELUM website nyala.
-# Jadi linux tidak punya waktu untuk mengembalikannya.
 CMD ["/bin/bash", "-c", "rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf /etc/apache2/mods-enabled/mpm_worker.load /etc/apache2/mods-enabled/mpm_worker.conf && apache2-foreground"]

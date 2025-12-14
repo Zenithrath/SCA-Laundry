@@ -71,7 +71,9 @@
     </script>
 </head>
 
-<body id="mainBody" class="min-h-screen flex items-center justify-center overflow-hidden relative">
+<body id="mainBody"
+      class="min-h-screen flex items-center justify-center overflow-x-hidden overflow-y-auto relative">
+
 
     <!-- Background blob (khusus mode kaca) -->
     <div id="bgBlobs" class="absolute inset-0 -z-10 opacity-0 transition-opacity duration-500 overflow-hidden">
