@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,6 +45,7 @@
             border: 1px solid var(--border-color);
             color: var(--text-main);
         }
+
         .auth-input::placeholder {
             color: var(--text-sub);
             opacity: .7;
@@ -57,9 +59,24 @@
             top: 0;
             left: 0;
         }
-        .hide-left { transform: translateX(-110%); opacity: 0; pointer-events: none; }
-        .hide-right { transform: translateX(110%); opacity: 0; pointer-events: none; }
-        .show { transform: translateX(0); opacity: 1; position: relative; }
+
+        .hide-left {
+            transform: translateX(-110%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .hide-right {
+            transform: translateX(110%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .show {
+            transform: translateX(0);
+            opacity: 1;
+            position: relative;
+        }
     </style>
 
     <script>
@@ -72,7 +89,7 @@
 </head>
 
 <body id="mainBody"
-      class="min-h-screen flex items-center justify-center overflow-x-hidden overflow-y-auto relative">
+    class="min-h-screen flex items-center justify-center overflow-x-hidden overflow-y-auto relative">
 
 
     <!-- Background blob (khusus mode kaca) -->
@@ -87,18 +104,16 @@
 
             <!-- Header halaman -->
             <div class="text-center mb-8">
-                <div class="w-20 h-20 bg-blue-600 rounded-full mx-auto text-3xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
-                    🧺
-                </div>
+
                 <h2 id="pageTitle" class="text-2xl font-bold">Selamat Datang</h2>
                 <p class="text-xs mt-2" style="color: var(--text-sub)">SCA Laundry Application</p>
             </div>
 
             <!-- Notifikasi error -->
             @if ($errors->any())
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-xs mb-4">
-                    <strong>Oops!</strong> {{ $errors->first() }}
-                </div>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-xs mb-4">
+                <strong>Oops!</strong> {{ $errors->first() }}
+            </div>
             @endif
 
             <!-- Wrapper kedua form -->
@@ -171,7 +186,7 @@
     <!-- Tombol ubah tema -->
     <div class="fixed bottom-6 right-6">
         <button onclick="toggleTheme()" class="bg-white/10 backdrop-blur-md border border-white/20 text-blue-500 px-4 py-2 rounded-full text-xs font-bold hover:bg-white/20">
-            🌓 Ganti Tema
+            Toggle Theme
         </button>
     </div>
 
@@ -221,4 +236,5 @@
     </script>
 
 </body>
+
 </html>
