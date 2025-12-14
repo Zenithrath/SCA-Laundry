@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    // Halaman utama user (landing + dashboard ringkas)
+    // Halaman utama user 
     public function index()
     {
         // Ambil semua layanan
         $services = Service::all();
-        
+
         $user = Auth::user();
         $latestOrder = null;
         $totalOrder = 0;
@@ -22,13 +22,13 @@ class UserController extends Controller
         $points = 0;
 
         if ($user) {
-            // Statistik pesanan user
+            // Statistik
             $orders = Order::where('user_id', $user->id)->get();
             $totalOrder = $orders->count();
             $totalExpense = $orders->sum('total_price');
             $points = $user->points ?? 0;
 
-            // Pesanan terakhir untuk tracking
+            //tracking
             $latestOrder = Order::where('user_id', $user->id)
                 ->with('service')
                 ->latest()

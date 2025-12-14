@@ -159,7 +159,7 @@ class AdminController extends Controller
     }
 
     // Update harga layanan
-    // Update Layanan (Bisa Nama atau Harga via AJAX)
+
 public function updateService(Request $request, $id)
 {
     $service = \App\Models\Service::findOrFail($id);
