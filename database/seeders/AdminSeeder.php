@@ -13,23 +13,23 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Akun Admin
         User::updateOrCreate(
-            ['email' => 'admin@sca.com'], // <--- KUNCI PENCARIAN (Cek email ini dulu)
+            ['email' => 'scalaundry@gmail.com'], // <--- KUNCI PENCARIAN (Cek email ini dulu)
             [
                 'name' => 'Admin',
                 'password' => Hash::make('password'), // <--- DATA YANG DIUPDATE/INSERT
                 'role' => 'admin',
-                'phone' => '081234567890'
+                'phone' => '087783923671'
             ]
         );
 
         // 2. Akun User (Gunakan updateOrCreate juga biar aman kalau di-seed 2x)
         User::updateOrCreate(
-            ['email' => 'user@sca.com'], 
+            ['email' => 'user@gmail.com'], 
             [
                 'name' => 'Djibril User',
                 'password' => Hash::make('password'),
                 'role' => 'user',
-                'phone' => '08987654321'
+                'phone' => '087783923671'
             ]
         );
 
