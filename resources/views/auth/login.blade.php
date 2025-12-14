@@ -8,7 +8,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-        /* Variabel tema dasar */
+ 
         :root {
             --bg-body: #f8fafc;
             --bg-card: #ffffff;
@@ -51,7 +51,7 @@
             opacity: .7;
         }
 
-        /* Transisi form login-register */
+
         .form-section {
             transition: .5s;
             position: absolute;
@@ -92,13 +92,13 @@
     class="min-h-screen flex items-center justify-center overflow-x-hidden overflow-y-auto relative">
 
 
-    <!-- Background blob (khusus mode kaca) -->
+    <!-- Background blob -->
     <div id="bgBlobs" class="absolute inset-0 -z-10 opacity-0 transition-opacity duration-500 overflow-hidden">
         <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-500 rounded-full blur-[100px] opacity-20 animate-blob"></div>
         <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-cyan-500 rounded-full blur-[100px] opacity-20 animate-blob"></div>
     </div>
 
-    <!-- Card utama (login/register) -->
+    <!-- Card utama  -->
     <div class="relative w-full max-w-md p-6">
         <div class="auth-card shadow-2xl rounded-[40px] p-8 md:p-10">
 

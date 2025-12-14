@@ -15,7 +15,9 @@ class UserController extends Controller
         // Ambil semua layanan
         $services = Service::all();
 
+        //ambil data user
         $user = Auth::user();
+
         $latestOrder = null;
         $totalOrder = 0;
         $totalExpense = 0;

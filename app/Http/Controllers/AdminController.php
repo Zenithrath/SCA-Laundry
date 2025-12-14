@@ -17,7 +17,7 @@ class AdminController extends Controller
         $unfinishedCount = Order::where('status', '!=', 'Selesai')->count();
         $totalIncome = Order::sum('total_price');
         $totalOrders = Order::count();
-        $orders = Order::latest()->take(5)->get();
+        // $orders = Order::latest()->take(5)->get();
 
         return view('admin.index', compact('orders', 'unfinishedCount', 'totalIncome', 'totalOrders'))
             ->with('page', 'dashboard')
@@ -79,25 +79,25 @@ class AdminController extends Controller
             : $availableMonths->first();
 
         // Data chart
-        $financeData = Order::select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('SUM(total_price) as total')
-            )
-            ->whereMonth('created_at', $selectedMonth)
-            ->whereYear('created_at', $selectedYear)
-            ->groupBy('date')
-            ->orderBy('date', 'ASC')
-            ->get();
+        // $financeData = Order::select(
+        //         DB::raw('DATE(created_at) as date'),
+        //         DB::raw('SUM(total_price) as total')
+        //     )
+        //     ->whereMonth('created_at', $selectedMonth)
+        //     ->whereYear('created_at', $selectedYear)
+        //     ->groupBy('date')
+        //     ->orderBy('date', 'ASC')
+        //     ->get();
 
-        $chartLabels = [];
-        $chartValues = [];
-        $chartColors = [];
+        // $chartLabels = [];
+        // $chartValues = [];
+        // $chartColors = [];
 
-        foreach ($financeData as $data) {
-            $chartLabels[] = Carbon::parse($data->date)->format('d M');
-            $chartValues[] = (float) $data->total;
-            $chartColors[] = '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
-        }
+        // foreach ($financeData as $data) {
+        //     $chartLabels[] = Carbon::parse($data->date)->format('d M');
+        //     $chartValues[] = (float) $data->total;
+        //     $chartColors[] = '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
+        // }
 
         // Tabel transaksi
         $filteredOrders = Order::whereMonth('created_at', $selectedMonth)
@@ -106,7 +106,7 @@ class AdminController extends Controller
 
         return view('admin.index', compact(
             'filteredOrders',
-            'chartLabels', 'chartValues', 'chartColors',
+            // 'chartLabels', 'chartValues', 'chartColors',
             'selectedMonth', 'selectedYear',
             'availableYears', 'availableMonths'
         ))
@@ -180,26 +180,26 @@ public function updateService(Request $request, $id)
 }
 
     // Update foto layanan
-    public function updateServiceImage(Request $request, $id)
-    {
-        $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
-        ]);
+    // public function updateServiceImage(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+    //     ]);
 
-        $service = Service::findOrFail($id);
+    //     $service = Service::findOrFail($id);
 
-        if ($request->hasFile('image')) {
-            if ($service->image && Storage::disk('public')->exists($service->image)) {
-                Storage::disk('public')->delete($service->image);
-            }
+    //     if ($request->hasFile('image')) {
+    //         if ($service->image && Storage::disk('public')->exists($service->image)) {
+    //             Storage::disk('public')->delete($service->image);
+    //         }
 
-            $path = $request->file('image')->store('services', 'public');
-            $service->image = $path;
-            $service->save();
-        }
+    //         $path = $request->file('image')->store('services', 'public');
+    //         $service->image = $path;
+    //         $service->save();
+    //     }
 
-        return back()->with('success', 'Foto layanan diperbarui');
-    }
+    //     return back()->with('success', 'Foto layanan diperbarui');
+    // }
 
     // Hapus layanan
     public function deleteService($id)

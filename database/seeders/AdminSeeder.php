@@ -13,16 +13,16 @@ class AdminSeeder extends Seeder
     {
         // 1. Akun Admin
         User::updateOrCreate(
-            ['email' => 'scalaundry@gmail.com'], // <--- KUNCI PENCARIAN (Cek email ini dulu)
+            ['email' => 'scalaundry@gmail.com'], 
             [
                 'name' => 'Admin',
-                'password' => Hash::make('password'), // <--- DATA YANG DIUPDATE/INSERT
+                'password' => Hash::make('password'), 
                 'role' => 'admin',
                 'phone' => '087783923671'
             ]
         );
 
-        // 2. Akun User (Gunakan updateOrCreate juga biar aman kalau di-seed 2x)
+        
         User::updateOrCreate(
             ['email' => 'user@gmail.com'], 
             [
