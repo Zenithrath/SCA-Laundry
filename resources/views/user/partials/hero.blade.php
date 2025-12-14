@@ -1,4 +1,6 @@
-<section id="home" class="relative w-full min-h-screen flex items-center justify-center transition-colors duration-500 hero-section">
+<section id="home"
+    class="relative w-full min-h-screen pt-24 md:pt-28 flex items-center justify-center transition-colors duration-500 hero-section">
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center w-full max-w-7xl mx-auto px-6 relative z-10 mt-16">
         
         <!-- Text Column -->
@@ -14,7 +16,7 @@
                 Nikmati kemudahan layanan laundry profesional dengan kualitas terbaik. Pakaian bersih, harum, dan siap pakai dalam waktu singkat.
             </p>
 
-            <div class="flex space-x-4 justify-center md:justify-start pt-4">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
                 <a href="#order" 
                    class="px-8 py-3 rounded-xl text-sm font-semibold shadow-xl transition-transform hover:scale-105 flex items-center justify-center hero-btn-primary">
                     Pesan Sekarang
@@ -32,7 +34,7 @@
             <img 
                 src="https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&w=800&q=80"
                 alt="Laundry Service"
-                class="rounded-[40px] shadow-2xl w-full h-72 md:h-[450px] object-cover z-10 relative transition-opacity duration-500 hero-img"
+                class="rounded-[40px] shadow-2xl w-full h-80 sm:h-96 md:h-[450px] object-cover z-10 relative transition-opacity duration-500 hero-img"
             />
             <div class="absolute -top-4 -right-4 w-full h-full rounded-[40px] -z-0 transition-colors duration-500 hero-img-deco"></div>
         </div>

@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Models\Service;
 use Illuminate\Support\Facades\Hash;
 
-class DatabaseSeeder extends Seeder
+class AdminSeeder extends Seeder
 {
     public function run(): void
     {

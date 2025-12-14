@@ -1,80 +1,106 @@
-<section id="booking-section" class="w-full py-16 px-4 relative transition-colors duration-500 bg-slate-50 dark:bg-slate-900">
-
-    <!-- Header -->
-    <div class="text-center mb-10 relative z-10">
-        <h2 class="text-3xl font-bold mb-2 text-slate-800 dark:text-white">Pesan Laundry Online</h2>
-        <p class="text-sm text-slate-500 dark:text-slate-400">Isi form di bawah untuk memesan</p>
+<!-- Wrapper Utama: Tanpa relative/z-index agar tidak menimbun tombol fixed -->
+<div class="w-full max-w-4xl mx-auto booking-wrapper">
+    
+    <!-- Header Text -->
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold mb-2 transition-colors duration-500 booking-title">Pesan Laundry Online</h2>
+        <p class="text-sm transition-colors duration-500 booking-subtitle">Pesan layanan laundry dengan mudah, tanpa perlu datang ke tempat</p>
     </div>
 
-    <!-- Card Container -->
-    <div class="relative z-10 max-w-4xl mx-auto min-h-[550px] rounded-[30px] p-8 shadow-2xl flex flex-col transition-all duration-500 bg-white dark:bg-slate-800/80 backdrop-blur-xl border border-slate-200 dark:border-slate-700">
+    <!-- MAIN CARD FORM -->
+    <div class="rounded-[30px] p-6 md:p-10 shadow-2xl transition-all duration-500 border booking-card">
         
-        <!-- Stepper -->
-        <div class="flex rounded-full p-1 mb-8 w-full max-w-2xl mx-auto bg-slate-100 dark:bg-slate-700/50">
-            <button onclick="goToStep(1)" id="btnStep1" class="step-btn flex-1 py-2 rounded-full text-xs font-bold transition-all bg-cyan-600 text-white shadow-md">Layanan</button>
-            <button onclick="goToStep(2)" id="btnStep2" class="step-btn flex-1 py-2 rounded-full text-xs font-bold transition-all text-slate-400 dark:hover:text-slate-200">Penjemputan</button>
-            <button onclick="goToStep(3)" id="btnStep3" class="step-btn flex-1 py-2 rounded-full text-xs font-bold transition-all text-slate-400 dark:hover:text-slate-200">Data Diri</button>
-            <button onclick="goToStep(4)" id="btnStep4" class="step-btn flex-1 py-2 rounded-full text-xs font-bold transition-all text-slate-400 dark:hover:text-slate-200">Pembayaran</button>
+        <!-- Judul Dalam Card -->
+        <div class="text-center mb-8">
+            <h3 class="text-xl font-bold transition-colors duration-500 booking-card-title">Form Pemesanan</h3>
+            <p class="text-xs mt-1 transition-colors duration-500 booking-subtitle">Isi form di bawah untuk memesan layanan laundry</p>
         </div>
 
-        <!-- Form -->
-        <form id="bookingForm" onsubmit="submitOrder(event)" class="flex-1 flex flex-col">
+        <!-- Stepper -->
+        <div class="flex rounded-full p-1.5 mb-8 w-full transition-colors duration-500 booking-stepper-container">
+            <button type="button" onclick="goToStep(1)" id="btnStep1" class="step-btn flex-1 py-2 rounded-full text-[10px] md:text-xs font-bold transition-all duration-300">Layanan</button>
+            <button type="button" onclick="goToStep(2)" id="btnStep2" class="step-btn flex-1 py-2 rounded-full text-[10px] md:text-xs font-bold transition-all duration-300">Penjemputan</button>
+            <button type="button" onclick="goToStep(3)" id="btnStep3" class="step-btn flex-1 py-2 rounded-full text-[10px] md:text-xs font-bold transition-all duration-300">Data Diri</button>
+            <button type="button" onclick="goToStep(4)" id="btnStep4" class="step-btn flex-1 py-2 rounded-full text-[10px] md:text-xs font-bold transition-all duration-300">Pembayaran</button>
+        </div>
+
+        <!-- Form Area -->
+        <form id="bookingForm" onsubmit="submitOrder(event)" class="flex flex-col">
             @csrf
-            <!-- Hidden Inputs -->
             <input type="hidden" name="service_id" id="inputServiceId">
             <input type="hidden" name="service_price" id="inputServicePrice" value="0">
             <input type="hidden" id="userPoints" value="{{ auth()->user() ? auth()->user()->points : 0 }}">
 
-            <!-- Step 1: Pilih Layanan -->
-            <div id="step1" class="step-content flex-1 flex flex-col justify-between">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <!-- Step 1: Layanan -->
+            <div id="step1" class="step-content flex-1 flex flex-col">
+                <p class="text-sm font-bold mb-4 ml-1 booking-label">Pilih Jenis Layanan :</p>
+                
+                <!-- Grid Layanan -->
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                     @foreach($services as $svc)
                     <div onclick="selectService({{ $svc->id }}, '{{ $svc->name }}', {{ $svc->price }})" 
-                         id="service-card-{{ $svc->id }}"
-                         class="service-card cursor-pointer border-2 border-transparent rounded-2xl p-6 text-center transition-all bg-slate-50 dark:bg-slate-700/50 hover:scale-105 hover:bg-cyan-50 dark:hover:bg-cyan-900/20">
-                        <h4 class="font-bold text-sm mb-1 text-slate-800 dark:text-white">{{ $svc->name }}</h4>
-                        <p class="text-[10px] mb-2 text-slate-500 dark:text-slate-400">Klik untuk memilih</p>
-                        <p class="text-xs font-bold text-cyan-500">Rp {{ number_format($svc->price, 0, ',', '.') }}</p>
+                            id="service-card-{{ $svc->id }}" 
+                            class="service-selection-card cursor-pointer rounded-2xl p-5 text-center transition-all duration-300 border border-transparent shadow-sm group relative overflow-hidden">
+                            
+                        <!-- Nama Layanan -->
+                        <h4 class="font-bold text-sm mb-1 transition-colors booking-card-title">{{ $svc->name }}</h4>
+                        
+                        <!-- Harga -->
+                        <p class="text-sm font-bold booking-price">
+                            Rp {{ number_format($svc->price, 0, ',', '.') }}<span class="text-[11px] font-normal opacity-70">/kg</span>
+                        </p>
+                        
+                        <!-- Deskripsi -->
+                        <p class="text-[10px] mt-2 booking-subtitle">Cuci + keringkan</p>
                     </div>
                     @endforeach
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Input Estimasi & Catatan -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-auto">
                     <div>
-                        <label class="block text-xs font-bold mb-2 ml-1">Estimasi Berat (Kg)</label>
-                        <input type="number" id="inputWeight" name="weight" oninput="calculateTotal()" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700">
+                        <label class="block text-xs font-bold mb-2 ml-1 booking-label">Estimasi Berat (Kg)</label>
+                        <input type="number" id="inputWeight" name="weight" oninput="calculateTotal()" placeholder="0" 
+                            class="w-full rounded-xl px-4 py-3 text-sm border-none focus:ring-2 transition-colors booking-input">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold mb-2 ml-1">Catatan</label>
-                        <input type="text" name="notes" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700">
+                        <label class="block text-xs font-bold mb-2 ml-1 booking-label">Catatan Khusus</label>
+                        <input type="text" name="notes" placeholder="Contoh: Jangan disetrika" 
+                            class="w-full rounded-xl px-4 py-3 text-sm border-none focus:ring-2 transition-colors booking-input">
                     </div>
                 </div>
             </div>
 
             <!-- Step 2: Penjemputan -->
             <div id="step2" class="step-content hidden flex-1 flex flex-col">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                        <label class="block text-xs font-bold mb-2 ml-1">Alamat Penjemputan</label>
-                        <!-- SAYA TAMBAHKAN ID DISINI -->
-                        <textarea id="pickupAddress" name="pickup_address" rows="4" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700"></textarea>
+                        <label class="block text-xs font-bold mb-2 ml-1 booking-label">Alamat Penjemputan</label>
+                        <textarea id="pickupAddress" name="pickup_address" rows="5" placeholder="Alamat lengkap..." 
+                            class="w-full rounded-xl px-4 py-3 text-sm border-none focus:ring-2 transition-colors booking-input"></textarea>
                     </div>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold mb-2 ml-1">Tanggal</label>
-                            <!-- SAYA TAMBAHKAN ID DISINI -->
-                            <input type="date" id="pickupDate" name="pickup_date" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700">
+                            <label class="block text-xs font-bold mb-2 ml-1 booking-label">Tanggal Jemput</label>
+                            <input type="date" id="pickupDate" name="pickup_date" 
+                                class="w-full rounded-xl px-4 py-3 text-sm border-none focus:ring-2 transition-colors booking-input">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold mb-2 ml-1">Jam</label>
-                            <div class="space-y-2">
-                                <label class="flex items-center p-3 rounded-xl cursor-pointer bg-slate-100 dark:bg-slate-700">
-                                    <input type="radio" name="pickup_time" value="Pagi (08.00 - 12.00)" checked class="accent-cyan-500 w-4 h-4">
-                                    <span class="ml-3 text-sm">Pagi (08.00 - 12.00)</span>
+                            <label class="block text-xs font-bold mb-2 ml-1 booking-label">Waktu Jemput</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="pickup_time" value="Pagi" checked class="peer sr-only">
+                                    <div class="rounded-xl p-3 text-center transition-all border border-transparent booking-radio peer-checked:ring-2">
+                                        <span class="text-xs font-bold booking-radio-text">Pagi</span>
+                                        <p class="text-[9px] booking-subtitle">08.00 - 12.00</p>
+                                    </div>
                                 </label>
-                                <label class="flex items-center p-3 rounded-xl cursor-pointer bg-slate-100 dark:bg-slate-700">
-                                    <input type="radio" name="pickup_time" value="Siang (13.00 - 17.00)" class="accent-cyan-500 w-4 h-4">
-                                    <span class="ml-3 text-sm">Siang (13.00 - 17.00)</span>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="pickup_time" value="Siang" class="peer sr-only">
+                                    <div class="rounded-xl p-3 text-center transition-all border border-transparent booking-radio peer-checked:ring-2">
+                                        <span class="text-xs font-bold booking-radio-text">Siang</span>
+                                        <p class="text-[9px] booking-subtitle">13.00 - 17.00</p>
+                                    </div>
                                 </label>
                             </div>
                         </div>
@@ -84,125 +110,254 @@
 
             <!-- Step 3: Data Diri -->
             <div id="step3" class="step-content hidden flex-1 flex flex-col">
-                <div class="space-y-6 max-w-xl mx-auto w-full">
+                <div class="space-y-5 max-w-md mx-auto w-full">
                     <div>
-                        <label class="block text-xs font-bold mb-2 ml-1">Nama Lengkap</label>
-                        <!-- SAYA TAMBAHKAN ID DISINI -->
-                        <input type="text" id="inputName" name="name" value="{{ auth()->user()->name ?? '' }}" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700">
+                        <label class="block text-xs font-bold mb-2 ml-1 booking-label">Nama Lengkap</label>
+                        <input type="text" id="inputName" name="name" value="{{ auth()->user()->name ?? '' }}" 
+                            class="w-full rounded-xl px-4 py-3 text-sm border-none focus:ring-2 transition-colors booking-input">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold mb-2 ml-1">Nomor HP / WA</label>
-                        <!-- SAYA TAMBAHKAN ID DISINI -->
-                        <input type="tel" id="inputPhone" name="phone" value="{{ auth()->user()->phone ?? '' }}" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700">
+                        <label class="block text-xs font-bold mb-2 ml-1 booking-label">Nomor HP / WA</label>
+                        <input type="tel" id="inputPhone" name="phone" value="{{ auth()->user()->phone ?? '' }}" 
+                            class="w-full rounded-xl px-4 py-3 text-sm border-none focus:ring-2 transition-colors booking-input">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold mb-2 ml-1">Email</label>
-                        <input type="email" name="email" value="{{ auth()->user()->email ?? '' }}" class="w-full rounded-xl px-4 py-3 bg-slate-100 dark:bg-slate-700">
+                        <label class="block text-xs font-bold mb-2 ml-1 booking-label">Email (Opsional)</label>
+                        <input type="email" name="email" value="{{ auth()->user()->email ?? '' }}" 
+                            class="w-full rounded-xl px-4 py-3 text-sm border-none focus:ring-2 transition-colors booking-input">
                     </div>
                 </div>
             </div>
 
             <!-- Step 4: Ringkasan -->
-            <div id="step4" class="step-content hidden flex-1 flex flex-col">
-                <div class="rounded-2xl p-6 space-y-3 mb-6 max-w-xl mx-auto w-full bg-slate-100 dark:bg-slate-700/50 shadow-inner">
-                    <h4 class="font-bold mb-4 text-center">Ringkasan Pesanan</h4>
-
-                    <div id="pointStatus" class="text-center mb-4 text-xs font-bold py-2 rounded bg-yellow-100 text-yellow-700 hidden"></div>
-
-                    <div class="flex justify-between text-sm">
-                        <span id="summaryService">Layanan</span>
-                        <span id="summaryPrice">Rp 0</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span>Antar Jemput</span>
-                        <span>Rp 10.000</span>
-                    </div>
-
-                    <div id="discountRow" class="flex justify-between text-sm text-green-500 font-bold hidden">
-                        <span>Diskon Poin (60%)</span>
-                        <span id="summaryDiscount">-Rp 0</span>
-                    </div>
-
-                    <div class="border-t pt-3 flex justify-between text-lg font-bold">
-                        <span>Total Bayar</span>
-                        <span id="summaryGrandTotal" class="text-cyan-500">Rp 0</span>
+            <div id="step4" class="step-content hidden flex-1 flex flex-col items-center justify-center">
+                <div class="w-full max-w-sm rounded-2xl p-6 border transition-colors booking-summary-card">
+                    <h4 class="font-bold mb-4 text-center booking-card-title">Ringkasan Pesanan</h4>
+                    <div id="pointStatus" class="text-center mb-4 text-[10px] font-bold py-2 px-3 rounded-lg bg-yellow-100 text-yellow-700 hidden border border-yellow-200"></div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm booking-subtitle">
+                            <span id="summaryService">Layanan</span>
+                            <span id="summaryPrice" class="font-semibold">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-sm booking-subtitle">
+                            <span>Antar Jemput</span>
+                            <span class="font-semibold">Rp 10.000</span>
+                        </div>
+                        <div id="discountRow" class="flex justify-between text-sm font-bold hidden booking-discount">
+                            <span>Diskon Poin</span>
+                            <span id="summaryDiscount">-Rp 0</span>
+                        </div>
+                        <div class="border-t pt-3 mt-2 flex justify-between text-lg font-bold booking-total-row">
+                            <span>Total Bayar</span>
+                            <span id="summaryGrandTotal" class="booking-grand-total">Rp 0</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Navigation -->
+            <!-- Navigation Buttons -->
             <div class="flex justify-between items-center mt-auto pt-8">
-                <button type="button" onclick="changeStep(-1)" id="btnBack" class="invisible text-slate-400 text-sm font-semibold">Kembali</button>
-                <button type="button" onclick="changeStep(1)" id="btnNext" class="bg-cyan-600 text-white px-8 py-3 rounded-xl font-bold">Lanjut</button>
-                <button type="submit" id="btnSubmit" class="hidden bg-green-600 text-white px-8 py-3 rounded-xl font-bold">Konfirmasi</button>
+                <button type="button" onclick="changeStep(-1)" id="btnBack" class="invisible px-6 py-2 rounded-xl text-sm font-bold transition-colors booking-btn-back">Kembali</button>
+                <button type="button" onclick="changeStep(1)" id="btnNext" class="px-10 py-3 rounded-xl font-bold shadow-lg transition-all active:scale-95 text-sm booking-btn-primary">Lanjut</button>
+                <button type="submit" id="btnSubmit" class="hidden px-10 py-3 rounded-xl font-bold shadow-lg transition-all active:scale-95 text-sm bg-green-600 hover:bg-green-700 text-white shadow-green-500/30">Konfirmasi</button>
             </div>
         </form>
     </div>
-</section>
+</div>
+
+<style>
+    /* =========================================
+       NORMAL MODE (Light - Biru Muda & Putih)
+       ========================================= */
+    .booking-wrapper { background-color: transparent; } /* Transparan agar tidak nutup background parent */
+    .booking-title { color: #1e293b; } /* Slate-800 */
+    .booking-subtitle { color: #64748b; } /* Slate-500 */
+    
+    .booking-card {
+        background-color: #ffffff;
+        border-color: #f1f5f9; /* Slate-100 */
+    }
+    .booking-card-title { color: #1e293b; }
+
+    /* Stepper */
+    .booking-stepper-container { background-color: #f1f5f9; } /* Slate-100 */
+    .step-btn { color: #64748b; } /* Inactive text */
+    .step-btn.active {
+        background-color: #ffffff;
+        color: #1e293b;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    /* Inputs */
+    .booking-label { color: #334155; } /* Slate-700 */
+    .booking-input {
+        background-color: #f1f5f9; /* Slate-100 */
+        color: #1e293b;
+    }
+    .booking-input:focus { outline: 2px solid #60a5fa; } /* Blue-400 */
+    .booking-input::placeholder { color: #94a3b8; }
+
+    /* Service Card (Pilihan) */
+    .service-selection-card {
+        background-color: #dbeafe; /* Blue-100 - SESUAI REQUEST */
+        border-color: transparent;
+    }
+    .service-selection-card.active {
+        background-color: #bfdbfe; /* Blue-200 */
+        border-color: #3b82f6; /* Blue-500 */
+        transform: scale(1.05);
+    }
+    .booking-price { color: #334155; }
+
+    /* Radio Inputs (Waktu Jemput) */
+    .booking-radio { background-color: #f1f5f9; }
+    .booking-radio-text { color: #334155; }
+    .peer-checked:checked ~ .booking-radio {
+        background-color: #dbeafe; /* Blue-100 */
+        outline: 2px solid #60a5fa;
+    }
+
+    /* Summary */
+    .booking-summary-card {
+        background-color: #eff6ff; /* Blue-50 */
+        border-color: #dbeafe;
+    }
+    .booking-discount { color: #16a34a; }
+    .booking-total-row { border-top-color: #cbd5e1; color: #1e293b; }
+    .booking-grand-total { color: #2563eb; } /* Blue-600 */
+
+    /* Buttons */
+    .booking-btn-back { color: #94a3b8; }
+    .booking-btn-back:hover { color: #475569; }
+    .booking-btn-primary {
+        background-color: #2563eb; /* Blue-600 */
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+    }
+    .booking-btn-primary:hover { background-color: #1d4ed8; }
+
+    /* =========================================
+       GLASS MODE (Dark - Navy & Cyan)
+       ========================================= */
+    body.glass-mode .booking-wrapper { background-color: transparent; }
+    body.glass-mode .booking-title { color: white; }
+    body.glass-mode .booking-subtitle { color: #94a3b8; } /* Slate-400 */
+    
+    body.glass-mode .booking-card {
+        background-color: rgba(30, 41, 59, 0.6); /* Slate-800 opacity */
+        backdrop-filter: blur(12px);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    body.glass-mode .booking-card-title { color: white; }
+
+    /* Stepper */
+    body.glass-mode .booking-stepper-container { background-color: rgba(15, 23, 42, 0.5); }
+    body.glass-mode .step-btn { color: #94a3b8; }
+    body.glass-mode .step-btn.active {
+        background-color: #0891b2; /* Cyan-600 */
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(8, 145, 178, 0.4);
+    }
+
+    /* Inputs */
+    body.glass-mode .booking-label { color: #cbd5e1; } /* Slate-300 */
+    body.glass-mode .booking-input {
+        background-color: rgba(51, 65, 85, 0.5); /* Slate-700 opacity */
+        color: white;
+    }
+    body.glass-mode .booking-input:focus { outline: 2px solid #22d3ee; } /* Cyan-400 */
+    body.glass-mode .booking-input::placeholder { color: #64748b; }
+
+    /* Service Card */
+    body.glass-mode .service-selection-card {
+        background-color: rgba(15, 23, 42, 1); /* Very Dark */
+        border-color: rgba(255,255,255,0.05);
+    }
+    body.glass-mode .service-selection-card.active {
+        background-color: rgba(15, 23, 42, 1);
+        border-color: #06b6d4; /* Cyan-500 */
+        box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+    }
+    body.glass-mode .booking-price { color: #cbd5e1; }
+
+    /* Radio Inputs */
+    body.glass-mode .booking-radio { background-color: rgba(51, 65, 85, 0.5); }
+    body.glass-mode .booking-radio-text { color: white; }
+    body.glass-mode .peer-checked:checked ~ .booking-radio {
+        background-color: rgba(8, 145, 178, 0.3);
+        outline: 2px solid #22d3ee;
+    }
+
+    /* Summary */
+    body.glass-mode .booking-summary-card {
+        background-color: #0f172a;
+        border-color: #334155;
+    }
+    body.glass-mode .booking-discount { color: #4ade80; }
+    body.glass-mode .booking-total-row { border-top-color: #475569; color: white; }
+    body.glass-mode .booking-grand-total { color: #22d3ee; } /* Cyan-400 */
+
+    /* Buttons */
+    body.glass-mode .booking-btn-back { color: #94a3b8; }
+    body.glass-mode .booking-btn-back:hover { color: #cbd5e1; }
+    body.glass-mode .booking-btn-primary {
+        background-color: #0891b2; /* Cyan-600 */
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(8, 145, 178, 0.3);
+    }
+    body.glass-mode .booking-btn-primary:hover { background-color: #0e7490; }
+</style>
 
 <script>
     let currentStep = 1;
     let selectedService = { id: null, price: 0, name: '' };
 
-    // Reset ke step awal saat halaman dibuka
     document.addEventListener("DOMContentLoaded", () => updateNavigationUI());
 
-    // Update tampilan step & tombol
     function updateNavigationUI() {
-        // Sembunyikan semua step
+        // Toggle Visibility Step
         document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
-        // Tampilkan step aktif
         document.getElementById(`step${currentStep}`).classList.remove('hidden');
 
-        // Update indikator stepper
+        // Toggle Style Stepper
         document.querySelectorAll('.step-btn').forEach((btn, i) => {
-            btn.className =
-                i + 1 === currentStep
-                    ? "step-btn flex-1 py-2 rounded-full text-xs font-bold bg-cyan-600 text-white shadow-md"
-                    : "step-btn flex-1 py-2 rounded-full text-xs font-bold text-slate-400";
+            if (i + 1 === currentStep) {
+                btn.classList.add('active'); // CSS yang handle warnanya
+            } else {
+                btn.classList.remove('active');
+            }
         });
 
-        // Atur tombol navigasi
+        // Toggle Buttons Navigation
         const btnBack = document.getElementById('btnBack');
         const btnNext = document.getElementById('btnNext');
         const btnSubmit = document.getElementById('btnSubmit');
 
         btnBack.classList.toggle('invisible', currentStep === 1);
-        btnNext.classList.toggle('hidden', currentStep === 4);
-        btnSubmit.classList.toggle('hidden', currentStep !== 4);
-
-        if (currentStep === 4) calculateTotal();
+        
+        if (currentStep === 4) {
+            btnNext.classList.add('hidden');
+            btnSubmit.classList.remove('hidden');
+            calculateTotal();
+        } else {
+            btnNext.classList.remove('hidden');
+            btnSubmit.classList.add('hidden');
+        }
     }
 
-    // Perpindahan step + validasi
     function changeStep(dir) {
-        // Validasi Step 1
         if (currentStep === 1 && dir === 1) {
-            const serviceId = document.getElementById('inputServiceId').value;
-            const weight = document.getElementById('inputWeight').value;
-
-            if (!serviceId) return alert('Silakan pilih layanan terlebih dahulu.');
-            if (!weight) return alert('Isi estimasi berat laundry.');
+            if (!document.getElementById('inputServiceId').value) return alert('Silakan pilih jenis layanan.');
+            if (!document.getElementById('inputWeight').value) return alert('Silakan isi estimasi berat.');
         }
-
-        // Validasi Step 2 (PERBAIKAN DISINI)
         if (currentStep === 2 && dir === 1) {
-            const address = document.getElementById('pickupAddress').value; // Mengambil value via ID
-            const date = document.getElementById('pickupDate').value;       // Mengambil value via ID
-
-            if (!address) return alert('Mohon lengkapi alamat penjemputan.');
-            if (!date) return alert('Mohon pilih tanggal penjemputan.');
+            if (!document.getElementById('pickupAddress').value) return alert('Alamat penjemputan wajib diisi.');
+            if (!document.getElementById('pickupDate').value) return alert('Tanggal penjemputan wajib diisi.');
         }
-
-        // Validasi Step 3
         if (currentStep === 3 && dir === 1) {
-            const name = document.getElementById('inputName').value;
-            const phone = document.getElementById('inputPhone').value;
-
-            if (!name) return alert('Nama wajib diisi.');
-            if (!phone) return alert('Nomor HP wajib diisi.');
+            if (!document.getElementById('inputName').value) return alert('Nama wajib diisi.');
+            if (!document.getElementById('inputPhone').value) return alert('Nomor HP wajib diisi.');
         }
-
         goToStep(currentStep + dir);
     }
 
@@ -212,54 +367,44 @@
         updateNavigationUI();
     }
 
-    // Pilih layanan
     function selectService(id, name, price) {
         selectedService = { id, name, price };
         document.getElementById('inputServiceId').value = id;
         document.getElementById('inputServicePrice').value = price;
 
-        // Reset style semua card
-        document.querySelectorAll('.service-card').forEach(el => {
-            el.classList.remove('border-cyan-500', 'bg-cyan-50', 'dark:bg-cyan-900/40');
-            el.classList.add('border-transparent');
+        // Reset semua card
+        document.querySelectorAll('.service-selection-card').forEach(el => {
+            el.classList.remove('active');
         });
 
-        // Highlight card yang dipilih
-        const card = document.getElementById(`service-card-${id}`);
-        card.classList.remove('border-transparent');
-        card.classList.add('border-cyan-500', 'bg-cyan-50', 'dark:bg-cyan-900/40');
-
+        // Set active card
+        const activeCard = document.getElementById(`service-card-${id}`);
+        if(activeCard) activeCard.classList.add('active');
+        
         calculateTotal();
     }
 
-    // Hitung total + diskon poin
     function calculateTotal() {
         const weight = parseInt(document.getElementById('inputWeight').value) || 0;
         const subtotal = selectedService.price * weight;
         let total = subtotal + 10000; // Biaya antar
-
         let points = parseInt(document.getElementById('userPoints').value) || 0;
         
         const discountRow = document.getElementById('discountRow');
         const pointStatus = document.getElementById('pointStatus');
-        const summaryDiscount = document.getElementById('summaryDiscount');
-
+        
         discountRow.classList.add('hidden');
         pointStatus.classList.add('hidden');
 
-        // Logika Diskon
         if (points >= 10 && weight > 0) {
-            const discount = total * 0.4; // Potongan 40% (Bayar 60%) atau sebaliknya?
-            // Berdasarkan controller sebelumnya, Anda menulis: $total *= 0.40; (Artinya diskon 60%)
-            // Maka discount valuenya adalah:
-            const discountAmount = total * 0.6; // Diskon sebesar 60%
-            total = total - discountAmount;
-
+            const discountAmount = total * 0.6;
+            total -= discountAmount;
+            
             discountRow.classList.remove('hidden');
-            summaryDiscount.innerText = '-Rp ' + discountAmount.toLocaleString('id-ID');
-
+            document.getElementById('summaryDiscount').innerText = '-Rp ' + discountAmount.toLocaleString('id-ID');
+            
             pointStatus.classList.remove('hidden');
-            pointStatus.innerText = `Poin: ${points}. Diskon 60% diterapkan!`;
+            pointStatus.innerText = `Poin Anda ${points}. Diskon 60% diterapkan!`;
         }
 
         document.getElementById('summaryService').innerText = selectedService.name || '-';
@@ -267,10 +412,8 @@
         document.getElementById('summaryGrandTotal').innerText = 'Rp ' + total.toLocaleString('id-ID');
     }
 
-    // Submit pesanan via AJAX
     function submitOrder(e) {
         e.preventDefault();
-
         const btnSubmit = document.getElementById('btnSubmit');
         btnSubmit.innerText = 'Memproses...';
         btnSubmit.disabled = true;
@@ -285,18 +428,17 @@
         .then(async res => {
             const data = await res.json();
             if (res.ok) {
-                alert('✅ ' + data.message);
+                alert('✅ Pesanan Berhasil!');
                 if (data.wa_url) window.open(data.wa_url, '_blank');
-                // Redirect setelah sukses
-                setTimeout(() => window.location.href = "{{ route('landing') }}", 1000);
+                window.location.href = "{{ route('landing') }}";
             } else {
-                alert('❌ ' + (data.message || 'Gagal memproses.'));
+                alert('❌ ' + data.message);
                 btnSubmit.innerText = 'Konfirmasi';
                 btnSubmit.disabled = false;
             }
         })
         .catch(err => {
-            alert('❌ Error koneksi: ' + err.message);
+            alert('❌ Error: ' + err.message);
             btnSubmit.innerText = 'Konfirmasi';
             btnSubmit.disabled = false;
         });
